@@ -1,5 +1,6 @@
 package edu.colorado.plv.droidStar;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,22 +22,54 @@ import android.speech.SpeechRecognizer;
 import android.content.Intent;
 import android.content.Context;
 
-public class MainActivity extends AppCompatActivity {
+import android.util.Log;
+
+// debugging only!
+import static java.lang.Thread.sleep;
+
+public class MainActivity extends Activity {
+
+    public SpeechRecognizer sr;
 
     public static final String TAG = "DROIDSTAR";
 
     public static final void log(String message) {
-        System.out.println("[" + TAG + "] >> " + message);
+        Log.d(TAG, message);
     }
 
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        log("Testing speech rec");
+        if (SpeechRecognizer.isRecognitionAvailable(this)) {
+
+            log("------------------------------");
+
+            log("Testing speech rec...");
+            this.sr = SpeechRecognizer.createSpeechRecognizer(this);
+            this.sr.setRecognitionListener(new Listener());
+            log("Recognizer initialized.");
+
+            log("Starting recognizer...");
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                            "edu.colorado.plv.droidStar");
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,5);
+            intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+            this.sr.startListening(intent);
+
+        } else {
+            
+            log("Speech recognition not available on this system?");
+            
+        }
 
     }
+
+    // public void onStart() {
 
     @Override
     public void onStop() {
@@ -55,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
         public void onBeginningOfSpeech() {
             logcb("onBeginningOfSpeech");
+            // log("Stopping recognizer...");
+            // sr.stopListening();
         }
 
         public void onEndOfSpeech() {
@@ -62,27 +97,32 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void onError(int error) {
-            System.out.println("");
+            logcb("onError");
         }
 
         public void onResults(Bundle results) {
-            System.out.println("");
+            logcb("results!");
+            log("Cleaning up...");
+            sr.destroy();
+    
+            log("Experiment complete.");
         }
 
         public void onPartialResults(Bundle partialResults) {
-            System.out.println("");
+            logcb("some results...");
         }
 
         public void onEvent(int eventType, Bundle params) {
-            System.out.println("");
+            logcb("event?");
         }
 
         public void onRmsChanged(float rmsdB) {
-            System.out.println("");
+            // Too noisy!
+            // logcb("seems the rms has changed.");
         }
 
         public void onBufferReceived(byte[] buffer) {
-            System.out.println("");
+            logcb("buff aquired");
         }
 
     }
