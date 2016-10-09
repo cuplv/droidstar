@@ -1,10 +1,11 @@
 package edu.colorado.plv.droidStar;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.Message;
 
 import android.content.Intent;
 import android.content.Context;
@@ -13,13 +14,12 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 
-import static edu.colorado.plv.droidStar.Static.TAG;
-import static edu.colorado.plv.droidStar.Static.log;
-import static edu.colorado.plv.droidStar.Static.logcb;
+import static edu.colorado.plv.droidStar.Static.*;
 
 public class SpeechRecognizerLP {
 
     private SpeechRecognizer sr;
+    private Context context;
 
     private static Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -29,62 +29,91 @@ public class SpeechRecognizerLP {
         .putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,5)
         .putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
 
-    SpeechRecognizerLP(Activity a) {
-        sr = SpeechRecognizer.createSpeechRecognizer(a);
+    public static String START = "start";
+    public static String STOP = "stop";
+    public static String CANCEL = "cancel";
+
+    public static boolean isError(String output) {
+        return true; //TODO
     }
 
-    public void query(Alphabet input) {
-        sr.setRecognitionListener(new Listener());
+    SpeechRecognizerLP(Context c) {
+        this.context = c;
+        reset();
+    }
+
+    public void reset() {
+        sr = SpeechRecognizer.createSpeechRecognizer(context);
+    }
+
+    public void giveInput(Callback forOutput, String input) {
+        sr.setRecognitionListener(new Listener(forOutput));
         handleInput(input);
     }
 
-    public void handleInput(Alphabet input) {
-        switch(input) {
-        case START:
+    public void handleInput(String i) {
+        if (i.equals(START)) {
             log("Invoking \"startListening()\"...");
             sr.startListening(intent);
-            break;
-        case STOP:
+        } else if (i.equals(STOP)) {
             log("Invoking \"stopListening()\"...");            
             sr.stopListening();
-            break;
-        case CANCEL:
+        } else if (i.equals(CANCEL)) {
             log("Invoking \"cancel()\"...");            
             sr.cancel();
-            break;
         }
     }
 
-    public enum Alphabet { START, STOP, CANCEL }
-
     public class Listener implements RecognitionListener {
+
+        private Callback forOutput;
+
+        Listener(Callback c) {
+            super();
+            this.forOutput = c;
+        }
+
+        private void respond(String output) {
+            Message message = new Message();
+            Bundle o = new Bundle();
+            o.putString("output", output);
+            message.setData(o);
+            forOutput.handleMessage(message);
+        }
 
         public void onReadyForSpeech(Bundle params) {
             logcb("onReadyForSpeech");
+            respond("onReadyForSpeech");
         }
 
         public void onBeginningOfSpeech() {
             logcb("onBeginningOfSpeech");
+            respond("onBeginningOfSpeech");
         }
 
         public void onEndOfSpeech() {
             logcb("onEndOfSpeech");
+            respond("onEndOfSpeech"); 
         }
 
         public void onError(int error) {
             logcb("onError " + error);
+            respond("onError " + error);
         }
 
         public void onResults(Bundle results) {
             logcb("results!");
+            respond("results!");
         }
 
         public void onPartialResults(Bundle partialResults) {
             logcb("some results...");
+            respond("some results...");
         }
 
         public void onEvent(int eventType, Bundle params) {
             logcb("event?");
+            respond("event?");
         }
 
         public void onRmsChanged(float rmsdB) {
@@ -94,6 +123,7 @@ public class SpeechRecognizerLP {
 
         public void onBufferReceived(byte[] buffer) {
             logcb("buff aquired");
+            respond("buff aquired");
         }
 
     }

@@ -1,7 +1,12 @@
 package edu.colorado.plv.droidStar;
 
+import java.util.Queue;
+import java.util.ArrayDeque;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler.Callback;
+
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,16 +27,14 @@ import android.speech.SpeechRecognizer;
 import android.content.Intent;
 import android.content.Context;
 
-import static edu.colorado.plv.droidStar.Static.TAG;
-import static edu.colorado.plv.droidStar.Static.log;
-import static edu.colorado.plv.droidStar.Static.logcb;
+import static edu.colorado.plv.droidStar.Static.*;
 
 // debugging only!
 import static java.lang.Thread.sleep;
 
 public class MainActivity extends Activity {
 
-    public SpeechRecognizerLP purpose;
+    private Transducer ds;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,16 +45,15 @@ public class MainActivity extends Activity {
             log("------------------------------");
 
             log("Testing speech rec...");
-            purpose = new SpeechRecognizerLP(this);
-            log("Recognizer initialized.");
 
-            purpose.query(SpeechRecognizerLP.Alphabet.START);
-            purpose.query(SpeechRecognizerLP.Alphabet.START);
-            purpose.query(SpeechRecognizerLP.Alphabet.START);
+            this.ds = new Transducer(this);
 
-            // log("Waiting 10 seconds...");
-            // try {sleep(10000);} catch (Exception e) {log("Can't sleep?");}
-            // log("Experiment complete.");
+            ArrayDeque inputs = new ArrayDeque();
+            inputs.addLast(SpeechRecognizerLP.START);
+            inputs.addLast(SpeechRecognizerLP.START);
+            inputs.addLast(SpeechRecognizerLP.START);
+
+            // this.ds.multiQuery(inputs);
 
         } else {
             
