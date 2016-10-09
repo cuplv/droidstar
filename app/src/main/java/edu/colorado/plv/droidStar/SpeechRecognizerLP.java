@@ -72,7 +72,7 @@ public class SpeechRecognizerLP {
         }
 
         public void onError(int error) {
-            logcb("onError");
+            logcb("onError " + error);
         }
 
         public void onResults(Bundle results) {

@@ -45,7 +45,8 @@ public class MainActivity extends Activity {
             purpose = new SpeechRecognizerLP(this);
             log("Recognizer initialized.");
 
-            log("Starting recognizer...");
+            purpose.query(SpeechRecognizerLP.Alphabet.START);
+            purpose.query(SpeechRecognizerLP.Alphabet.START);
             purpose.query(SpeechRecognizerLP.Alphabet.START);
 
             // log("Waiting 10 seconds...");
