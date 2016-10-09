@@ -39,14 +39,16 @@ public class SpeechRecognizerLP {
 
     SpeechRecognizerLP(Context c) {
         this.context = c;
-        reset();
+        this.reset();
     }
 
     public void reset() {
-        sr = SpeechRecognizer.createSpeechRecognizer(context);
+        this.sr = SpeechRecognizer.createSpeechRecognizer(this.context);
+        log("SR has been reset.");
     }
 
     public void giveInput(Callback forOutput, String input) {
+        log("LP received input \"" + input + "\"...");
         sr.setRecognitionListener(new Listener(forOutput));
         handleInput(input);
     }
@@ -61,6 +63,8 @@ public class SpeechRecognizerLP {
         } else if (i.equals(CANCEL)) {
             log("Invoking \"cancel()\"...");            
             sr.cancel();
+        } else {
+            log("Unrecognized input received, doing nothing...");
         }
     }
 

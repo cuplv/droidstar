@@ -48,10 +48,17 @@ public class MainActivity extends Activity {
 
             this.ds = new Transducer(this);
 
-            ArrayDeque inputs = new ArrayDeque();
-            inputs.addLast(SpeechRecognizerLP.START);
-            inputs.addLast(SpeechRecognizerLP.START);
-            inputs.addLast(SpeechRecognizerLP.START);
+            log("Querying with START");
+
+            this.ds.query(SpeechRecognizerLP.START);
+
+            log("Querying with START");
+
+            this.ds.query(SpeechRecognizerLP.START);
+
+            log("Querying with START");
+
+            this.ds.query(SpeechRecognizerLP.START);
 
             // this.ds.multiQuery(inputs);
 

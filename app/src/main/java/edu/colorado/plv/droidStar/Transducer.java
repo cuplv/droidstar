@@ -2,6 +2,7 @@ package edu.colorado.plv.droidStar;
 
 import java.util.Queue;
 import java.util.ArrayDeque;
+import java.util.concurrent.CountDownLatch;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -26,7 +27,7 @@ public class Transducer {
     private Queue<String> inputs;
     private Queue<String> outputs;
     private int queryNum;
-    private Object bell;
+    private CountDownLatch outputReceived;
 
     Transducer(Context c) {
         this.context = c;
@@ -34,7 +35,7 @@ public class Transducer {
         this.inputs = new ArrayDeque();
         this.outputs = new ArrayDeque();
         this.queryNum = 0;
-        this.bell = new Object();
+        // this.outputReceived = new CountDownLatch(1);
     }
 
     private synchronized void advance() {
@@ -58,10 +59,13 @@ public class Transducer {
         // perform all inputs in sequence, discarding outputs
     }
 
-    public synchronized void reportOutput(String o, int q) {
+    public void reportOutput(String o, int q) {
         if (q == queryNum) {
+            log("Logging ouput \"" + o + "\" in queue.");
             outputs.add(o);
-            bell.notify();
+            outputReceived.countDown();
+        } else {
+            log("Output with stale queryNum ignored.");
         }
     }
 
@@ -78,10 +82,11 @@ public class Transducer {
             // produced an error
             log("Giving input \"" + i + "\"...");
             advance();
+            outputReceived = new CountDownLatch(1);
             purpose.giveInput(new OutputCallback(queryNum), i);
-            while(outputs.isEmpty()) {
-                try {bell.wait();} catch (Exception e) {log("Couldn't wait?");}
-            }
+            try {outputReceived.await();} catch (Exception e) {log("Interrupted await?");}
+
+            log("Output returned, inspecting for error...");
             if (SpeechRecognizerLP.isError(outputs.peek())) {
                 rollback();
                 return REJECTED;
