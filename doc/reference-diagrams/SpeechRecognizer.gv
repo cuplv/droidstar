@@ -3,7 +3,8 @@ digraph F {
   node [shape = doublecircle]; Idle;
   node [shape = circle];
 
-  Idle -> Idle [ label="I: stopListening(),\nO: [8]ERROR_CLIENT" ];
-  Idle -> Listen [ label="I: startListening()" ];
-  Listen -> Listen [ label="I: startListening(),\nO: [8]ERROR_CLIENT,\nO: onReadyForSpeech(),\nO: onBeginningOfSpeech(),\nO: onPartialResults()" ]
+  Idle -> Start [ label="I: startListening()" ];
+  Start -> Listen [ label="O: onReadyForSpeech()" ];
+  Listen -> Listen [ label="I: \nO: onBeginningOfSpeech(),\nO: onPartialResults()" ];
+  Listen -> Idle [ label="I: stopListening(),\nO: onResults()" ];
 }
