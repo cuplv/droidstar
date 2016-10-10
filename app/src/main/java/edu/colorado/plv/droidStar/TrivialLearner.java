@@ -9,13 +9,13 @@ import static edu.colorado.plv.droidStar.Static.*;
 
 public class TrivialLearner {
     private Queue<String> query;
-    private Transducer teacher;
+    private MealyTeacher teacher;
 
     private static void logl(String m) {
         log("LEARNER", m);
     }
 
-    TrivialLearner(Queue<String> q, Transducer t) {
+    TrivialLearner(Queue<String> q, MealyTeacher t) {
         this.query = q;
         this.teacher = t;
     }

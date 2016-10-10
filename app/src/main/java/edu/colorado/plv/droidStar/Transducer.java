@@ -1,7 +1,11 @@
 package edu.colorado.plv.droidStar;
 
-import java.util.Queue;
-import java.util.ArrayDeque;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.lang.Thread;
+import java.lang.Runnable;
 
 import android.os.Handler.Callback;
 import android.os.Message;
@@ -9,12 +13,11 @@ import android.content.Context;
 
 import static edu.colorado.plv.droidStar.Static.*;
 
-public class Transducer {
+public class Transducer implements MealyTeacher {
 
-    private Context context;
-    private SpeechRecognizerLP purpose;
-    private Queue<String> inputs;
-    private Queue<String> outputs;
+    private LearningPurpose purpose;
+    private BlockingQueue<String> inputTrace;
+    private BlockingQueue<String> outputsSeen;
     private int queryNum;
     private boolean responded;
 
@@ -22,36 +25,41 @@ public class Transducer {
         log("TRANSDUCER", m);
     }
 
-    Transducer(Context c) {
-        this.context = c;
-        this.purpose = new SpeechRecognizerLP(context);
-        this.inputs = new ArrayDeque();
-        this.outputs = new ArrayDeque();
+    Transducer(LearningPurpose p) {
+        this.purpose = p;
+        this.inputTrace = new LinkedBlockingQueue();
+        this.outputsSeen = new LinkedBlockingQueue();
         this.queryNum = 0;
         this.responded = false;
     }
 
+    public List<String> inputs() {
+        List<String> is = new ArrayList(purpose.inputs());
+        is.add(DELTA);
+        return is;
+    }
+
     private synchronized void advance() {
-        outputs.clear();
+        outputsSeen.clear();
         queryNum++;
         responded = false;
     }
 
     public synchronized void reset() {
         purpose.reset();
-        inputs.clear();
+        inputTrace.clear();
         advance();
     }
 
     private void rollback() {
         purpose.reset();
-        playAll(inputs);
+        playAll(inputTrace);
         advance();
     }
 
     // TODO
-    private void playAll(Queue<String> is) {
-        // perform all inputs in sequence, discarding outputs
+    private void playAll(BlockingQueue<String> is) {
+        // perform inputTrace in sequence, discarding outputs
     }
 
     private synchronized void reportOutput(String o, Callback c, int q) {
@@ -63,30 +71,72 @@ public class Transducer {
     
                     c.handleMessage(quickMessage(REJECTED));
                 } else {
-                    outputs.add(o);
+                    outputsSeen.add(o);
                     c.handleMessage(quickMessage(ACCEPTED));
                 }
             } else {
-                outputs.add(o);
+                outputsSeen.add(o);
             }
         } else {
-            logl("Dropped stale output \"" + o + "\" with num " + q);
+            logl("Dropped stale output \"" + o + "\" with num " + q + ", not " + queryNum);
         }
 
     }
 
     public synchronized void query(Callback c, String i) {
         if (i == DELTA) {
-            String output = outputs.poll();
-            if (output == null) {
-                c.handleMessage(quickMessage(BETA));
-            } else {
-                c.handleMessage(quickMessage(output));
-            }
+            new Thread(new BetaTimer(purpose.betaTimeout())).start();
+            new Thread(new DeltaFetcher(c)).start();
         } else {
             logl("Forwarding input \"" + i + "\" to LP...");
             advance();
+            new Thread(new BetaTimer(purpose.betaTimeout())).start();
             purpose.giveInput(new TransducerCB(c, queryNum), i);
+        }
+    }
+
+    private synchronized void maybePutBeta() {
+        if (outputsSeen.isEmpty()) {
+            outputsSeen.add(BETA);
+        }
+    }
+
+    private class BetaTimer implements Runnable {
+        private int timeout;
+
+        BetaTimer(int t) {
+            this.timeout = t;
+        }
+
+        public void run() {
+            try {
+                Thread.sleep(timeout);
+            } catch (Exception e) {
+                logl("Couldn't sleep");
+            }
+            maybePutBeta();
+        }
+    }
+
+    private class DeltaFetcher implements Runnable {
+        private Callback outerCallback;
+
+        DeltaFetcher(Callback c) {
+            this.outerCallback = c;
+        }
+
+        public void run() {
+            boolean done = false;
+            while (!done) {
+                try {
+                    outerCallback.handleMessage
+                        (quickMessage(outputsSeen.take()));
+                    Thread.sleep(100);
+                    done = true;
+                } catch (Exception e) {
+                    logl("Couldn't block?");
+                }
+            }
         }
     }
 

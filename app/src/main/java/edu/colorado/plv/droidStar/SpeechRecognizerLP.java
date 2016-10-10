@@ -1,5 +1,8 @@
 package edu.colorado.plv.droidStar;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.os.Handler.Callback;
 import android.content.Intent;
@@ -11,10 +14,11 @@ import android.speech.SpeechRecognizer;
 
 import static edu.colorado.plv.droidStar.Static.*;
 
-public class SpeechRecognizerLP {
+public class SpeechRecognizerLP implements LearningPurpose {
 
     private SpeechRecognizer sr;
     private Context context;
+    private Callback forOutput;
 
     private static Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -28,13 +32,30 @@ public class SpeechRecognizerLP {
     public static String STOP = "stop";
     public static String CANCEL = "cancel";
 
+    public List<String> inputs() {
+        List<String> is = new ArrayList();
+        is.add(START);
+        is.add(STOP);
+        is.add(CANCEL);
+        return is;
+    }
+
     private static void logl(String m) {
         log("PURPOSE", m);
     }
 
+    public boolean isError(String o) {
+        if (o == "onError:8") {
+            return true;
+        } else if (o == "onError:5") {
+            return true;
+        } else {
+            return false;
+        }       
+    }
 
-    public static boolean isError(String output) {
-        return false; //TODO
+    public int betaTimeout() {
+        return 9000;
     }
 
     SpeechRecognizerLP(Context c) {
@@ -47,9 +68,10 @@ public class SpeechRecognizerLP {
         logl("LP has been reset.");
     }
 
-    public void giveInput(Callback forOutput, String input) {
+    public void giveInput(Callback c, String input) {
         logl("LP received input \"" + input + "\"...");
-        sr.setRecognitionListener(new Listener(forOutput));
+        forOutput = c;
+        sr.setRecognitionListener(new Listener());
         handleInput(input);
     }
 
@@ -70,23 +92,16 @@ public class SpeechRecognizerLP {
 
     public class Listener implements RecognitionListener {
 
-        private Callback forOutput;
-
         private void logcb(String callbackName) {
             logl("CALLBACK: " + callbackName);
         }
 
-
-        Listener(Callback c) {
+        Listener() {
             super();
-            this.forOutput = c;
+            logl("STARTED A PURPOSE LISTENER!!!");
         }
 
         private void respond(String output) {
-            // Message message = new Message();
-            // Bundle o = new Bundle();
-            // o.putString("output", output);
-            // message.setData(o);
             forOutput.handleMessage(quickMessage(output));
         }
 
@@ -102,12 +117,12 @@ public class SpeechRecognizerLP {
 
         public void onEndOfSpeech() {
             logcb("onEndOfSpeech");
-            respond("onEndOfSpeech"); 
+            respond("onEndOfSpeech");
         }
 
         public void onError(int error) {
-            logcb("onError " + error);
-            respond("onError " + error);
+            logcb("onError:" + error);
+            respond("onError:" + error);
         }
 
         public void onResults(Bundle results) {
@@ -116,8 +131,9 @@ public class SpeechRecognizerLP {
         }
 
         public void onPartialResults(Bundle partialResults) {
-            logcb("some results...");
-            respond("some results...");
+            // Doesn't state-change (I assume?), not important
+            // logcb("some results...");
+            // respond("some results...");
         }
 
         public void onEvent(int eventType, Bundle params) {

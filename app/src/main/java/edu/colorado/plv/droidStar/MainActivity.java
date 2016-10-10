@@ -48,10 +48,21 @@ public class MainActivity extends Activity {
 
             logl("Testing speech rec...");
 
-            this.ds = new Transducer(this);
+            this.ds = new Transducer(new SpeechRecognizerLP(this));
 
             Queue<String> q = new ArrayDeque();
             q.add(SpeechRecognizerLP.START);
+            q.add(DELTA);
+            q.add(SpeechRecognizerLP.STOP);
+            q.add(SpeechRecognizerLP.START);
+            q.add(DELTA);
+            q.add(DELTA);
+            q.add(DELTA);
+            q.add(DELTA);
+            q.add(DELTA);
+            q.add(DELTA);
+            q.add(DELTA);
+            q.add(DELTA);
             q.add(DELTA);
 
             logl("Querying with START, DELTA");
