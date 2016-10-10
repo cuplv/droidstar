@@ -2,6 +2,9 @@ package edu.colorado.plv.droidStar;
 
 import android.util.Log;
 
+import android.os.Message;
+import android.os.Bundle;
+
 public class Static {
 
     public static String TAG = "DROIDSTAR";
@@ -16,6 +19,18 @@ public class Static {
 
     public static void logcb(String callbackName) {
         log("CALLBACK: " + callbackName);
+    }
+
+    public static Message quickMessage(String val) {
+        Message m = new Message();
+        Bundle b = new Bundle();
+        b.putString("quickMessage", val);
+        m.setData(b);
+        return m;
+    }
+
+    public static String readMessage(Message m) {
+        return m.getData().getString("quickMessage");
     }
 
 }

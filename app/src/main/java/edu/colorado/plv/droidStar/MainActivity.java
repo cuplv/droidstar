@@ -29,12 +29,10 @@ import android.content.Context;
 
 import static edu.colorado.plv.droidStar.Static.*;
 
-// debugging only!
-import static java.lang.Thread.sleep;
-
 public class MainActivity extends Activity {
 
     private Transducer ds;
+    private TrivialLearner learner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,19 +46,14 @@ public class MainActivity extends Activity {
 
             this.ds = new Transducer(this);
 
-            log("Querying with START");
+            Queue<String> q = new ArrayDeque();
+            q.add(SpeechRecognizerLP.START);
+            q.add(DELTA);
 
-            this.ds.query(SpeechRecognizerLP.START);
+            log("Querying with START, DELTA");
 
-            log("Querying with START");
-
-            this.ds.query(SpeechRecognizerLP.START);
-
-            log("Querying with START");
-
-            this.ds.query(SpeechRecognizerLP.START);
-
-            // this.ds.multiQuery(inputs);
+            this.learner = new TrivialLearner(q, this.ds);
+            this.learner.learn();
 
         } else {
             

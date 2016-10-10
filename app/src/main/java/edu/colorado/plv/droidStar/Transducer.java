@@ -27,7 +27,6 @@ public class Transducer {
     private Queue<String> inputs;
     private Queue<String> outputs;
     private int queryNum;
-    private CountDownLatch outputReceived;
 
     Transducer(Context c) {
         this.context = c;
@@ -35,7 +34,6 @@ public class Transducer {
         this.inputs = new ArrayDeque();
         this.outputs = new ArrayDeque();
         this.queryNum = 0;
-        // this.outputReceived = new CountDownLatch(1);
     }
 
     private synchronized void advance() {
@@ -43,88 +41,71 @@ public class Transducer {
         queryNum++;
     }
 
-    public void reset() {
+    public synchronized void reset() {
         purpose.reset();
         inputs.clear();
         advance();
     }
 
-    public void rollback() {
+    private void rollback() {
         purpose.reset();
         playAll(inputs);
         advance();
     }
 
+    // TODO
     private void playAll(Queue<String> is) {
         // perform all inputs in sequence, discarding outputs
     }
 
-    public void reportOutput(String o, int q) {
+    private synchronized void reportOutput(String o, Callback c, int q) {
         if (q == queryNum) {
-            log("Logging ouput \"" + o + "\" in queue.");
-            outputs.add(o);
-            outputReceived.countDown();
+            if (outputs.isEmpty()) {
+                if (purpose.isError(o)) {
+                    rollback();
+    
+                    c.handleMessage(quickMessage(REJECTED));
+                } else {
+                    outputs.add(o);
+                    c.handleMessage(quickMessage(ACCEPTED));
+                }
+            } else {
+                outputs.add(o);
+            }
         } else {
-            log("Output with stale queryNum ignored.");
+            log("Dropped stale output \"" + o + "\" with num " + q);
         }
+
     }
 
-    public String query(String i) {
+    public synchronized void query(Callback c, String i) {
         if (i == DELTA) {
             String output = outputs.poll();
             if (output == null) {
-                return BETA;
+                c.handleMessage(quickMessage(BETA));
             } else {
-                return output;
+                c.handleMessage(quickMessage(output));
             }
         } else {
-            // perform action and then peek at queue to see if it
-            // produced an error
-            log("Giving input \"" + i + "\"...");
+            log("Forwarding input \"" + i + "\" to LP...");
             advance();
-            outputReceived = new CountDownLatch(1);
-            purpose.giveInput(new OutputCallback(queryNum), i);
-            try {outputReceived.await();} catch (Exception e) {log("Interrupted await?");}
-
-            log("Output returned, inspecting for error...");
-            if (SpeechRecognizerLP.isError(outputs.peek())) {
-                rollback();
-                return REJECTED;
-            } else {
-                return ACCEPTED;
-            }
+            purpose.giveInput(new TransducerCB(c, queryNum), i);
         }
     }
 
-    // public void multiQuery(Queue<String> is) {
-    //     final Queue<String> inputs = is;
-    //     final String input = inputs.poll();
-    //     Callback c = new Callback() {
-    //             public boolean handleMessage(Message output) {
-    //                 log("Got back " + output.obj + ", continuing...");
-    //                 multiQuery(inputs);
-    //                 return true;
-    //             }
-    //         };
-    //     if (input != null) {
-    //         log("Giving input...");
-    //         purpose.giveInput(c, input);
-    //     } else {
-    //         log("Reached end of inputs");
-    //     }
-    // }
-
-    private class OutputCallback implements Callback {
+    private class TransducerCB implements Callback {
         private int onQueryNum;
+        private Callback outerCallback;
 
-        OutputCallback(int n) {
+        TransducerCB(Callback c, int n) {
             this.onQueryNum = n;
+            this.outerCallback = c;
         }
 
-        public boolean handleMessage(Message o) {
-            String output = o.getData().getString("output");
+        public boolean handleMessage(Message m) {
+            String output = readMessage(m);
             log("Got back " + output + ", continuing...");
-            reportOutput(output, onQueryNum);
+            reportOutput(output, outerCallback, onQueryNum);
             return true;
         }
     }

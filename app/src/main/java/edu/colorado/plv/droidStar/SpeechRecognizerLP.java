@@ -34,7 +34,7 @@ public class SpeechRecognizerLP {
     public static String CANCEL = "cancel";
 
     public static boolean isError(String output) {
-        return true; //TODO
+        return false; //TODO
     }
 
     SpeechRecognizerLP(Context c) {
@@ -44,7 +44,7 @@ public class SpeechRecognizerLP {
 
     public void reset() {
         this.sr = SpeechRecognizer.createSpeechRecognizer(this.context);
-        log("SR has been reset.");
+        log("LP has been reset.");
     }
 
     public void giveInput(Callback forOutput, String input) {
@@ -78,11 +78,11 @@ public class SpeechRecognizerLP {
         }
 
         private void respond(String output) {
-            Message message = new Message();
-            Bundle o = new Bundle();
-            o.putString("output", output);
-            message.setData(o);
-            forOutput.handleMessage(message);
+            // Message message = new Message();
+            // Bundle o = new Bundle();
+            // o.putString("output", output);
+            // message.setData(o);
+            forOutput.handleMessage(quickMessage(output));
         }
 
         public void onReadyForSpeech(Bundle params) {
