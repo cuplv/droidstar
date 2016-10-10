@@ -1,12 +1,7 @@
 package edu.colorado.plv.droidStar;
 
-
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Handler.Callback;
-import android.os.Message;
-
 import android.content.Intent;
 import android.content.Context;
 
@@ -33,6 +28,11 @@ public class SpeechRecognizerLP {
     public static String STOP = "stop";
     public static String CANCEL = "cancel";
 
+    private static void logl(String m) {
+        log("PURPOSE", m);
+    }
+
+
     public static boolean isError(String output) {
         return false; //TODO
     }
@@ -44,33 +44,38 @@ public class SpeechRecognizerLP {
 
     public void reset() {
         this.sr = SpeechRecognizer.createSpeechRecognizer(this.context);
-        log("LP has been reset.");
+        logl("LP has been reset.");
     }
 
     public void giveInput(Callback forOutput, String input) {
-        log("LP received input \"" + input + "\"...");
+        logl("LP received input \"" + input + "\"...");
         sr.setRecognitionListener(new Listener(forOutput));
         handleInput(input);
     }
 
     public void handleInput(String i) {
         if (i.equals(START)) {
-            log("Invoking \"startListening()\"...");
+            logl("Invoking \"startListening()\"...");
             sr.startListening(intent);
         } else if (i.equals(STOP)) {
-            log("Invoking \"stopListening()\"...");            
+            logl("Invoking \"stopListening()\"...");            
             sr.stopListening();
         } else if (i.equals(CANCEL)) {
-            log("Invoking \"cancel()\"...");            
+            logl("Invoking \"cancel()\"...");            
             sr.cancel();
         } else {
-            log("Unrecognized input received, doing nothing...");
+            logl("Unrecognized input received, doing nothing...");
         }
     }
 
     public class Listener implements RecognitionListener {
 
         private Callback forOutput;
+
+        private void logcb(String callbackName) {
+            logl("CALLBACK: " + callbackName);
+        }
+
 
         Listener(Callback c) {
             super();

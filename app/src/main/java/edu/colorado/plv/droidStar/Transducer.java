@@ -2,21 +2,10 @@ package edu.colorado.plv.droidStar;
 
 import java.util.Queue;
 import java.util.ArrayDeque;
-import java.util.concurrent.CountDownLatch;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
-
-
-import android.content.Intent;
 import android.content.Context;
-
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 
 import static edu.colorado.plv.droidStar.Static.*;
 
@@ -27,6 +16,11 @@ public class Transducer {
     private Queue<String> inputs;
     private Queue<String> outputs;
     private int queryNum;
+    private boolean responded;
+
+    private static void logl(String m) {
+        log("TRANSDUCER", m);
+    }
 
     Transducer(Context c) {
         this.context = c;
@@ -34,11 +28,13 @@ public class Transducer {
         this.inputs = new ArrayDeque();
         this.outputs = new ArrayDeque();
         this.queryNum = 0;
+        this.responded = false;
     }
 
     private synchronized void advance() {
         outputs.clear();
         queryNum++;
+        responded = false;
     }
 
     public synchronized void reset() {
@@ -60,7 +56,8 @@ public class Transducer {
 
     private synchronized void reportOutput(String o, Callback c, int q) {
         if (q == queryNum) {
-            if (outputs.isEmpty()) {
+            if (!responded) {
+                responded = true;
                 if (purpose.isError(o)) {
                     rollback();
     
@@ -73,7 +70,7 @@ public class Transducer {
                 outputs.add(o);
             }
         } else {
-            log("Dropped stale output \"" + o + "\" with num " + q);
+            logl("Dropped stale output \"" + o + "\" with num " + q);
         }
 
     }
@@ -87,7 +84,7 @@ public class Transducer {
                 c.handleMessage(quickMessage(output));
             }
         } else {
-            log("Forwarding input \"" + i + "\" to LP...");
+            logl("Forwarding input \"" + i + "\" to LP...");
             advance();
             purpose.giveInput(new TransducerCB(c, queryNum), i);
         }
@@ -104,7 +101,7 @@ public class Transducer {
 
         public boolean handleMessage(Message m) {
             String output = readMessage(m);
-            log("Got back " + output + ", continuing...");
+            logl("Got back " + output + ", continuing...");
             reportOutput(output, outerCallback, onQueryNum);
             return true;
         }

@@ -13,13 +13,10 @@ public class Static {
     public static String DELTA = "delta";
     public static String BETA = "beta";
 
-    public static void log(String message) {
-        Log.d(TAG, message);
+    public static void log(String context, String message) {
+        Log.d(TAG + ":" + context, message);
     }
 
-    public static void logcb(String callbackName) {
-        log("CALLBACK: " + callbackName);
-    }
 
     public static Message quickMessage(String val) {
         Message m = new Message();

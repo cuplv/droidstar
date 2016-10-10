@@ -1,9 +1,8 @@
 package edu.colorado.plv.droidStar;
 
 import java.util.Queue;
-import java.util.ArrayDeque;
-import android.os.Message;
 
+import android.os.Message;
 import android.os.Handler.Callback;
 
 import static edu.colorado.plv.droidStar.Static.*;
@@ -12,13 +11,17 @@ public class TrivialLearner {
     private Queue<String> query;
     private Transducer teacher;
 
+    private static void logl(String m) {
+        log("LEARNER", m);
+    }
+
     TrivialLearner(Queue<String> q, Transducer t) {
         this.query = q;
         this.teacher = t;
     }
 
     public void learn() {
-        log("Starting learn process...");
+        logl("Starting learn process...");
         nextInput();
     }
 
@@ -27,12 +30,12 @@ public class TrivialLearner {
         if (i != null) {
             teacher.query(new TrivialLearnerCB(i), i);
         } else {
-            log("Inputs exhausted; query complete!");
+            logl("Inputs exhausted; query complete!");
         }
     }
 
     private synchronized void reportFact(String i, String o) {
-        log("Learner received O: \"" + o + "\" on I: \"" + i + "\"");
+        logl("Received output \"" + o + "\" on input \"" + i + "\"");
     }
 
     private class TrivialLearnerCB implements Callback {

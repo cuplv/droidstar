@@ -34,15 +34,19 @@ public class MainActivity extends Activity {
     private Transducer ds;
     private TrivialLearner learner;
 
+    private static void logl(String m) {
+        log("MAIN", m);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (SpeechRecognizer.isRecognitionAvailable(this)) {
 
-            log("------------------------------");
+            logl("------------------------------");
 
-            log("Testing speech rec...");
+            logl("Testing speech rec...");
 
             this.ds = new Transducer(this);
 
@@ -50,14 +54,14 @@ public class MainActivity extends Activity {
             q.add(SpeechRecognizerLP.START);
             q.add(DELTA);
 
-            log("Querying with START, DELTA");
+            logl("Querying with START, DELTA");
 
             this.learner = new TrivialLearner(q, this.ds);
             this.learner.learn();
 
         } else {
             
-            log("Speech recognition not available on this system?");
+            logl("Speech recognition not available on this system?");
             
         }
 
