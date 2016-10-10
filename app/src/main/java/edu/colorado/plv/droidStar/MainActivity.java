@@ -50,24 +50,17 @@ public class MainActivity extends Activity {
 
             this.ds = new Transducer(new SpeechRecognizerLP(this));
 
-            Queue<String> q = new ArrayDeque();
-            q.add(SpeechRecognizerLP.START);
-            q.add(DELTA);
-            q.add(SpeechRecognizerLP.STOP);
-            q.add(SpeechRecognizerLP.START);
-            q.add(DELTA);
-            q.add(DELTA);
-            q.add(DELTA);
-            q.add(DELTA);
-            q.add(DELTA);
-            q.add(DELTA);
-            q.add(DELTA);
-            q.add(DELTA);
-            q.add(DELTA);
+            Queue<String> q1 = new ArrayDeque();
+            q1.add(SpeechRecognizerLP.START);
+            q1.add(DELTA);
+            q1.add(DELTA);
+            q1.add(SpeechRecognizerLP.STOP);
+            q1.add(DELTA);
 
-            logl("Querying with START, DELTA");
+            Queue<Queue<String>> qs = new ArrayDeque();
+            qs.add(q1);
 
-            this.learner = new TrivialLearner(q, this.ds);
+            this.learner = new TrivialLearner(qs, this.ds);
             this.learner.learn();
 
         } else {
@@ -77,63 +70,5 @@ public class MainActivity extends Activity {
         }
 
     }
-
-    // public void onStart() {
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    // public class Listener implements RecognitionListener {
-
-    //     public void logcb(String callbackName) {
-    //         log("CALLBACK: " + callbackName);
-    //     }
-
-    //     public void onReadyForSpeech(Bundle params) {
-    //         logcb("onReadyForSpeech");
-    //     }
-
-    //     public void onBeginningOfSpeech() {
-    //         logcb("onBeginningOfSpeech");
-    //         // log("Stopping recognizer...");
-    //         // sr.stopListening();
-    //     }
-
-    //     public void onEndOfSpeech() {
-    //         logcb("onEndOfSpeech");
-    //     }
-
-    //     public void onError(int error) {
-    //         logcb("onError");
-    //     }
-
-    //     public void onResults(Bundle results) {
-    //         logcb("results!");
-    //         log("Cleaning up...");
-    //         sr.destroy();
-    
-    //         log("Experiment complete.");
-    //     }
-
-    //     public void onPartialResults(Bundle partialResults) {
-    //         logcb("some results...");
-    //     }
-
-    //     public void onEvent(int eventType, Bundle params) {
-    //         logcb("event?");
-    //     }
-
-    //     public void onRmsChanged(float rmsdB) {
-    //         // Too noisy!
-    //         // logcb("seems the rms has changed.");
-    //     }
-
-    //     public void onBufferReceived(byte[] buffer) {
-    //         logcb("buff aquired");
-    //     }
-
-    // }
 
 }

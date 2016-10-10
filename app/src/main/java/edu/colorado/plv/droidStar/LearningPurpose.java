@@ -11,9 +11,6 @@ public interface LearningPurpose {
     public int betaTimeout();
     public List<String> inputs();
     
-    // TODO
-    // public List<String> outputs();
-    
     public void reset();
     public void giveInput(Callback c, String input);
 }
