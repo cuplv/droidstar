@@ -25,49 +25,26 @@ public class TrivialLearner {
 
     public void learn() {
         logl("Starting learn process...");
-        current = queries.poll();
-        if (current != null) {
-            teacher.reset();
-            nextInput();
-        } else {
-            logl("Empty queue, nothing to learn?");
-        }
+        nextQuery();
     }
 
-    private synchronized void nextInput() {
-        String i = current.poll();
-        if (i != null) {
-            teacher.query(new TrivialLearnerCB(i, inputNum), i);
+    private synchronized void nextQuery() {
+        Queue<String> q = queries.poll();
+        Callback c = new TrivialLearnerCB();
+        if (q != null) {
+            teacher.membershipQuery(c, q);
         } else {
-            logl("Inputs exhausted; query complete.");
-            if (!queries.isEmpty()) {
-                learn();
-            }
+            logl("Queries exhausted; learning complete.");
         }
-    }
-
-    private synchronized void reportFact(String i, String o) {        
-        logl("Received output \"" + o + "\" on input \"" + i + "\"");
-        inputNum++;
     }
 
     private class TrivialLearnerCB implements Callback {
-        private String input;
-        private int cbInputNum;
-
-        TrivialLearnerCB(String i, int n) {
-            this.input = i;
-            this.cbInputNum = n;
+        TrivialLearnerCB() {
         }
 
         public boolean handleMessage(Message m) {
-            if (cbInputNum == inputNum) {
-                String output = readMessage(m);
-                reportFact(input, output);
-                nextInput();
-            } else {
-                logl("Dup teacher response dropped.");
-            }
+            logl("Teacher received notification of response.");
+            logl("Sending next query...");
             return true;
         }
     }

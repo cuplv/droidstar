@@ -2,6 +2,8 @@ package edu.colorado.plv.droidStar;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Queue;
+import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.lang.Thread;
@@ -21,38 +23,58 @@ public class Transducer implements MealyTeacher {
     private Queue<String> outputTrace;
     private BlockingQueue<String> outputBuff;
 
+    private static void logl(String m) {
+        log("TRANSDUCER", m);
+    }    
+
     Transducer(LearningPurpose p) {
         this.purpose = p;
     }
 
-    public void query(Callback c, Queue<String> is) {
+    public List<String> inputs() {
+        List<String> inputs = new ArrayList(purpose.inputs());
+        inputs.add(DELTA);
+
+        return inputs;
+    }
+
+    public void membershipQuery(Callback c, Queue<String> is) {
         purpose.reset();
         finalCallback = c;
         remInputs = new ArrayDeque(is);
         inputTrace = new ArrayDeque();
         outputTrace = new ArrayDeque();
+        outputBuff = new LinkedBlockingQueue();
 
+        logl("Running query: " + query2String(remInputs));
         step();
     }
 
     private void step() {
-        Queue<String> unresolvedInputs;
-        int numDeltas;
+        
+        
         if (!remInputs.isEmpty()) {
             
-            while (!remInputs.isEmpty()
-                   && !remInputs.element().equals(DELTA)) {
-                String input = remInputs.remove();
-                unresolvedInputs.add(input);
-                purpose.giveInput(outputBuff, input);
-            }
-            
-            while (!remInputs.isEmpty()
-                   && remInputs.element().equals(DELTA)) {
-                numDeltas++;
+            String input = remInputs.remove();
+
+            // If the input has already been determined as disabled,
+            // we just put a "-" in the outputs and move on
+            if (input.equals(REJECTED)) {
+                inputTrace.add(input);
+                outputTrace.add(REJECTED);
+                step();
+            } else {
+                purpose.giveInput(new OutputCB(outputBuff), input);
+                int numDeltas = 0;
+                while (!remInputs.isEmpty()
+                       && remInputs.element().equals(DELTA)) {
+                    numDeltas++;
+                }
+
+                new Thread(new OutputFetcher(input, numDeltas)).start();
             }
 
-            new Thread(new OutputFetcher(unresolvedInputs, numDeltas)).start();
+            
         } else {
             callback();
         }
@@ -60,24 +82,50 @@ public class Transducer implements MealyTeacher {
 
     // TODO: Call back to sender with ouput queue
     private void callback() {
-        logl("Finished query with outputs:");
-        for (String output : outputTrace) {
-            logl(output);
+        String o = query2String(outputTrace);
+        logl("Finished query with outputs: " + o);
+        finalCallback.handleMessage(new Message());
+    }
+
+    private synchronized void reportOutput(Queue<String> b, String o) {
+        String output = new String(o);
+        logl("Purpose returned " + output);
+        b.add(output);
+    }
+
+    private synchronized void maybePutBeta(Queue<String> b) {
+        if (b.isEmpty()) {
+            logl("Time is up, reporting beta.");
+            b.add(BETA);
         }
     }
 
-    // TODO: Undo a bad input by reseting purpose and re-running all
-    // successful inputs
-    private void rollback() {
-        
+    private class BetaTimer implements Runnable {
+        private int timeout;
+        private Queue<String> buffer;
+
+        BetaTimer(Queue<String> b, int t) {
+            this.buffer = b;
+            this.timeout = t;
+        }
+
+        public void run() {
+            try {
+                Thread.sleep(timeout);
+            } catch (Exception e) {
+                logl("Couldn't sleep");
+            }
+            maybePutBeta(buffer);
+        }
     }
 
+
     private class OutputFetcher implements Runnable {
-        private Queue unresolvedInputs;
+        private String input;
         private int numDeltas;
 
-        OutputFetcher(Queue is, int d) {
-            this.unresolvedInputs = is;
+        OutputFetcher(String i, int d) {
+            this.input = i;
             this.numDeltas = d;
         }
 
@@ -86,47 +134,59 @@ public class Transducer implements MealyTeacher {
             // Start timer for Beta outputs; if this runs out, we'll
             // stop waiting for real outputs, assign beta outputs, and
             // return.
-            new Thread(new BetaTimer(outputBuff)).start();
+            betaTimer(outputBuff, purpose.betaTimeout());
 
             String output = blockTakeOutput(outputBuff);
 
             if (!purpose.isError(output)) {
-                
-                // Record inputs as successful
-                for (String input : unresolvedInputs) {
-                    inputTrace.add(input);
-                    outputTrace.add(ACCEPTED);
-                }
-
+                inputTrace.add(input);
+                outputTrace.add(ACCEPTED);
                 serveDeltas(output);
             } else {
-                rollback();
-                // TODO: might need to start a new BetaTimer?
-                serveDeltas(blockTakeOutput(outputBuff));
+                ArrayDeque fixedQuery = new ArrayDeque();
+
+                // Make a new query that replaces the failed input
+                // we're looking at with a REJECTED note
+                fixedQuery.addAll(inputTrace);
+                fixedQuery.add(REJECTED);
+                fixedQuery.addAll(remInputs);
+
+                // And then start the query over again
+                logl("Encountered invald input, restarting query...");
+                membershipQuery(finalCallback, fixedQuery);
             }
         }
 
-        private void serveDeltas(String ouput) {
-            if (numDeltas > 0) {
+        private void betaTimer(Queue<String> b, int t) {
+            logl("Starting beta timer...");
+            BetaTimer timer = new BetaTimer(b,t);
+            new Thread(timer).start();
+        }
+
+        private void serveDeltas(String o) {
+            String output = o;
+            while (numDeltas > 0) {
                 if (output == BETA) {
                     // Output a beta for all waiting deltas
                     for (int i=0; i<numDeltas; i++) {
                         outputTrace.add(BETA);
                     }
+                    // break loop
+                    numDeltas = 0;
                 } else {
-                    // Record this output and recurse for remaining
-                    // deltas
+                    // Record this output and get a new output for the
+                    // next delta
                     outputTrace.add(output);
                     numDeltas--;
-                    serveDeltas(blockTakeOutput(outputBuff));
+                    output = blockTakeOutput(outputBuff);
                 }
             }
             // if there are no deltas waiting, we don't collect any
             // outputs
         }
 
-        private static String blockTakeOutput(BlockingQueue outputBuff) {
-            String output;
+        private String blockTakeOutput(BlockingQueue<String> outputBuff) {
+            String output = new String();
             boolean done = false;
             while (!done) {
                 try {
@@ -140,7 +200,21 @@ public class Transducer implements MealyTeacher {
         }
 
     }
-    
+
+    private class OutputCB implements Callback {
+        private Queue<String> buffer;
+
+        OutputCB(Queue<String> b) {
+            this.buffer = b;
+        }
+
+        public boolean handleMessage(Message m) {
+            String output = readMessage(m);
+            reportOutput(buffer, output);
+            return true;
+        }
+    }
+}    
 
 // public class Transducer implements MealyTeacher {
 

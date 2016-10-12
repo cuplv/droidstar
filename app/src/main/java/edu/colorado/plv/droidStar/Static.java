@@ -1,5 +1,7 @@
 package edu.colorado.plv.droidStar;
 
+import java.util.Queue;
+
 import android.util.Log;
 
 import android.os.Message;
@@ -29,5 +31,13 @@ public class Static {
     public static String readMessage(Message m) {
         return m.getData().getString("quickMessage");
     }
+
+    public static String query2String(Queue<String> q) {
+        String s = "empty";
+        for (String i : q) {
+            s.concat(" <> " + i);
+        }
+        return s;
+    }       
 
 }

@@ -51,6 +51,7 @@ public class MainActivity extends Activity {
             this.ds = new Transducer(new SpeechRecognizerLP(this));
 
             Queue<String> q1 = new ArrayDeque();
+            // q1.add(SpeechRecognizerLP.CANCEL);
             q1.add(SpeechRecognizerLP.START);
             q1.add(DELTA);
             q1.add(DELTA);
