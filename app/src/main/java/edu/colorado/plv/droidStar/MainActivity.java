@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
 
             logl("Testing speech rec...");
 
-            this.ds = new Transducer(new SpeechRecognizerLP(this));
+            this.ds = new Transducer(this, new SpeechRecognizerLP(this));
 
             Queue<String> q1 = new ArrayDeque();
             // q1.add(SpeechRecognizerLP.CANCEL);

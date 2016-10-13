@@ -9,8 +9,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.lang.Thread;
 import java.lang.Runnable;
 
-import android.os.Handler.Callback;
 import android.os.Message;
+import android.os.Handler;
+import android.os.Handler.Callback;
 import android.content.Context;
 
 import static edu.colorado.plv.droidStar.Static.*;
@@ -21,13 +22,15 @@ public class Transducer implements MealyTeacher {
     private Queue<String> remInputs;
     private Queue<String> inputTrace;
     private Queue<String> outputTrace;
+    private Context mainContext;
 
     private static void logl(String m) {
         log("TRANSDUCER", m);
     }    
 
-    Transducer(LearningPurpose p) {
+    Transducer(Context c, LearningPurpose p) {
         this.purpose = p;
+        this.mainContext = c;
     }
 
     public List<String> inputSet() {
@@ -186,6 +189,10 @@ public class Transducer implements MealyTeacher {
             }
             // if there are no deltas waiting, we don't collect any
             // outputs
+
+            // and now we return to the main thread
+            Handler mainHandler = new Handler(mainContext.getMainLooper());
+            mainHandler.post(new StepMain(buffer));
         }
 
         private String blockTakeOutput(BlockingQueue<String> buffer) {
@@ -199,9 +206,22 @@ public class Transducer implements MealyTeacher {
                     logl("Output take interrupted? Continuing...");
                 }
             }
+            logl("BlockTake returning with " + output + "...");
             return output;
         }
 
+    }
+
+    private class StepMain implements Runnable {
+        private BlockingQueue<String> buffer;
+
+        StepMain(BlockingQueue<String> b) {
+            this.buffer = b;
+        }
+
+        public void run() {
+            step(buffer);
+        }
     }
 
     private class OutputCB implements Callback {
