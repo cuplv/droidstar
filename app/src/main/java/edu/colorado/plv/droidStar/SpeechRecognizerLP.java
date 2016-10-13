@@ -31,6 +31,10 @@ public class SpeechRecognizerLP implements LearningPurpose {
     public static String START = "start";
     public static String STOP = "stop";
     public static String CANCEL = "cancel";
+    public static String RECORDING_STARTING = "starting";
+    public static String RECORDING_FINISHED = "finished";
+    public static String CLIENT_ERROR = "error";
+    public static String ENV_ERROR = "environment_error";
 
     public List<String> inputSet() {
         List<String> is = new ArrayList();
@@ -45,9 +49,9 @@ public class SpeechRecognizerLP implements LearningPurpose {
     }
 
     public boolean isError(String o) {
-        if (o == "onError:8") {
+        if (o.equals("error")) {
             return true;
-        } else if (o == "onError:5") {
+        } else if (o.equals("environment_error")) {
             return true;
         } else {
             return false;
@@ -111,45 +115,50 @@ public class SpeechRecognizerLP implements LearningPurpose {
         }
 
         public void onReadyForSpeech(Bundle params) {
-            respond("onReadyForSpeech");
+            respond(RECORDING_STARTING);
         }
 
         public void onBeginningOfSpeech() {
-            respond("onBeginningOfSpeech");
+            // Non-deterministic
+            // respond(BEGIN_SPEECH);
         }
 
         public void onEndOfSpeech() {
-            respond("onEndOfSpeech");
+            // Non-deterministic
+            // respond(END_SPEECH);
         }
 
         public void onError(int error) {
-            respond("onError:" + error);
+            switch (error) {
+            case 5: // client error
+                logl("Error: Client");
+                respond(CLIENT_ERROR);
+                break;
+            case 8: // recognizer busy
+                logl("Error: Busy");
+                respond(CLIENT_ERROR);
+                break;
+            case 3: // audio failure
+            case 9: // permissions not set right
+                respond(ENV_ERROR);
+                break;
+            case 6: // speech timeout
+            case 1: // network timeout
+            case 2: // server error
+                respond(RECORDING_FINISHED);
+                break;
+            default: // don't acknowledge others
+                break;
+            }
         }
 
         public void onResults(Bundle results) {
-            respond("results!");
+            respond(RECORDING_FINISHED);
         }
 
-        public void onPartialResults(Bundle partialResults) {
-            // Doesn't state-change (I assume?), not important
-            // logcb("some results...");
-            // respond("some results...");
-        }
-
-        public void onEvent(int eventType, Bundle params) {
-            logcb("event?");
-            respond("event?");
-        }
-
-        public void onRmsChanged(float rmsdB) {
-            // Too noisy!
-            // logcb("seems the rms has changed.");
-        }
-
-        public void onBufferReceived(byte[] buffer) {
-            logcb("buff aquired");
-            respond("buff aquired");
-        }
-
+        public void onPartialResults(Bundle partialResults) {}
+        public void onEvent(int eventType, Bundle params) {}
+        public void onRmsChanged(float rmsdB) {}
+        public void onBufferReceived(byte[] buffer) {}
     }
 }
