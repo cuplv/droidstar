@@ -1,6 +1,7 @@
 package edu.colorado.plv.droidStar;
 
 import java.util.Queue;
+import java.util.ArrayDeque;
 
 import android.util.Log;
 
@@ -33,9 +34,10 @@ public class Static {
     }
 
     public static String query2String(Queue<String> q) {
+        Queue<String> query = new ArrayDeque(q);
         String s = "empty";
-        for (String i : q) {
-            s.concat(" <> " + i);
+        for (String i : query) {
+            s = s.concat(" <> " + i);
         }
         return s;
     }       

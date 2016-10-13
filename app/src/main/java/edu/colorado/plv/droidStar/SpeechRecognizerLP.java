@@ -32,7 +32,7 @@ public class SpeechRecognizerLP implements LearningPurpose {
     public static String STOP = "stop";
     public static String CANCEL = "cancel";
 
-    public List<String> inputs() {
+    public List<String> inputSet() {
         List<String> is = new ArrayList();
         is.add(START);
         is.add(STOP);
@@ -60,29 +60,24 @@ public class SpeechRecognizerLP implements LearningPurpose {
 
     SpeechRecognizerLP(Context c) {
         this.context = c;
-        this.reset();
     }
 
-    public void reset() {
+    public void reset(Callback c) {
         this.sr = SpeechRecognizer.createSpeechRecognizer(this.context);
+        sr.setRecognitionListener(new Listener(c));
         logl("LP has been reset.");
     }
 
-    public void giveInput(Callback c, String input) {
+    public void giveInput(String input) {
         logl("LP received input \"" + input + "\"...");
-        forOutput = c;
-        sr.setRecognitionListener(new Listener());
-        handleInput(input);
-    }
-
-    public void handleInput(String i) {
-        if (i.equals(START)) {
+        
+        if (input.equals(START)) {
             logl("Invoking \"startListening()\"...");
             sr.startListening(intent);
-        } else if (i.equals(STOP)) {
+        } else if (input.equals(STOP)) {
             logl("Invoking \"stopListening()\"...");            
             sr.stopListening();
-        } else if (i.equals(CANCEL)) {
+        } else if (input.equals(CANCEL)) {
             logl("Invoking \"cancel()\"...");            
             sr.cancel();
         } else {
@@ -91,42 +86,44 @@ public class SpeechRecognizerLP implements LearningPurpose {
     }
 
     public class Listener implements RecognitionListener {
+        private Callback forOutput;
 
         private void logcb(String callbackName) {
-            logl("CALLBACK: " + callbackName);
+            logl("Callback received: " + callbackName);
         }
 
-        Listener() {
-            super();
+        private void logcf(String callbackName) {
+            logl("Callback reported: " + callbackName);
+        }
+
+        Listener(Callback c) {
+            this.forOutput = c;
             logl("STARTED A PURPOSE LISTENER!!!");
         }
 
         private void respond(String output) {
-            forOutput.handleMessage(quickMessage(output));
+            logcb(output);
+            // forOutput.handleMessage(quickMessage(output));
+            logcf(output);
         }
 
         public void onReadyForSpeech(Bundle params) {
-            logcb("onReadyForSpeech");
             respond("onReadyForSpeech");
         }
 
         public void onBeginningOfSpeech() {
-            logcb("onBeginningOfSpeech");
             respond("onBeginningOfSpeech");
         }
 
         public void onEndOfSpeech() {
-            logcb("onEndOfSpeech");
             respond("onEndOfSpeech");
         }
 
         public void onError(int error) {
-            logcb("onError:" + error);
             respond("onError:" + error);
         }
 
         public void onResults(Bundle results) {
-            logcb("results!");
             respond("results!");
         }
 

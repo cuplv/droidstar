@@ -9,8 +9,8 @@ import static edu.colorado.plv.droidStar.Static.*;
 public interface LearningPurpose {
     public boolean isError(String output);
     public int betaTimeout();
-    public List<String> inputs();
+    public List<String> inputSet();
     
-    public void reset();
-    public void giveInput(Callback c, String input);
+    public void reset(Callback c);
+    public void giveInput(String input);
 }

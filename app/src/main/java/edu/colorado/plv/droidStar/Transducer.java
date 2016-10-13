@@ -21,7 +21,6 @@ public class Transducer implements MealyTeacher {
     private Queue<String> remInputs;
     private Queue<String> inputTrace;
     private Queue<String> outputTrace;
-    private BlockingQueue<String> outputBuff;
 
     private static void logl(String m) {
         log("TRANSDUCER", m);
@@ -31,28 +30,29 @@ public class Transducer implements MealyTeacher {
         this.purpose = p;
     }
 
-    public List<String> inputs() {
-        List<String> inputs = new ArrayList(purpose.inputs());
+    public List<String> inputSet() {
+        List<String> inputs = new ArrayList(purpose.inputSet());
         inputs.add(DELTA);
 
         return inputs;
     }
 
     public void membershipQuery(Callback c, Queue<String> is) {
-        purpose.reset();
         finalCallback = c;
         remInputs = new ArrayDeque(is);
         inputTrace = new ArrayDeque();
         outputTrace = new ArrayDeque();
-        outputBuff = new LinkedBlockingQueue();
+
+        BlockingQueue<String> outputBuff = new LinkedBlockingQueue();
+
+        purpose.reset(new OutputCB(outputBuff)); 
 
         logl("Running query: " + query2String(remInputs));
-        step();
+        step(outputBuff);
     }
 
-    private void step() {
-        
-        
+    private void step(BlockingQueue<String> buffer) {
+
         if (!remInputs.isEmpty()) {
             
             String input = remInputs.remove();
@@ -62,16 +62,16 @@ public class Transducer implements MealyTeacher {
             if (input.equals(REJECTED)) {
                 inputTrace.add(input);
                 outputTrace.add(REJECTED);
-                step();
+                step(buffer);
             } else {
-                purpose.giveInput(new OutputCB(outputBuff), input);
+                purpose.giveInput(input);
                 int numDeltas = 0;
                 while (!remInputs.isEmpty()
                        && remInputs.element().equals(DELTA)) {
                     numDeltas++;
                 }
 
-                new Thread(new OutputFetcher(input, numDeltas)).start();
+                // new Thread(new OutputFetcher(buffer, input, numDeltas)).start();
             }
 
             
@@ -87,13 +87,13 @@ public class Transducer implements MealyTeacher {
         finalCallback.handleMessage(new Message());
     }
 
-    private synchronized void reportOutput(Queue<String> b, String o) {
+    private void reportOutput(Queue<String> b, String o) {
         String output = new String(o);
         logl("Purpose returned " + output);
         b.add(output);
     }
 
-    private synchronized void maybePutBeta(Queue<String> b) {
+    private void maybePutBeta(Queue<String> b) {
         if (b.isEmpty()) {
             logl("Time is up, reporting beta.");
             b.add(BETA);
@@ -123,10 +123,12 @@ public class Transducer implements MealyTeacher {
     private class OutputFetcher implements Runnable {
         private String input;
         private int numDeltas;
+        private BlockingQueue<String> buffer;
 
-        OutputFetcher(String i, int d) {
+        OutputFetcher(BlockingQueue<String> b, String i, int d) {
             this.input = i;
             this.numDeltas = d;
+            this.buffer = b;
         }
 
         public void run() {
@@ -134,9 +136,9 @@ public class Transducer implements MealyTeacher {
             // Start timer for Beta outputs; if this runs out, we'll
             // stop waiting for real outputs, assign beta outputs, and
             // return.
-            betaTimer(outputBuff, purpose.betaTimeout());
+            betaTimer(buffer, purpose.betaTimeout());
 
-            String output = blockTakeOutput(outputBuff);
+            String output = blockTakeOutput(buffer);
 
             if (!purpose.isError(output)) {
                 inputTrace.add(input);
@@ -178,19 +180,19 @@ public class Transducer implements MealyTeacher {
                     // next delta
                     outputTrace.add(output);
                     numDeltas--;
-                    output = blockTakeOutput(outputBuff);
+                    output = blockTakeOutput(buffer);
                 }
             }
             // if there are no deltas waiting, we don't collect any
             // outputs
         }
 
-        private String blockTakeOutput(BlockingQueue<String> outputBuff) {
+        private String blockTakeOutput(BlockingQueue<String> buffer) {
             String output = new String();
             boolean done = false;
             while (!done) {
                 try {
-                    output = outputBuff.take();
+                    output = buffer.take();
                     done = true;
                 } catch (Exception e) {
                     logl("Output take interrupted? Continuing...");

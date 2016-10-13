@@ -7,7 +7,6 @@ import android.os.Message;
 import android.os.Handler.Callback;
 
 public interface MealyTeacher {
-    public List<String> inputs();
+    public List<String> inputSet();
     public void membershipQuery(Callback c, Queue<String> query);
-    // public void reset();
 }
