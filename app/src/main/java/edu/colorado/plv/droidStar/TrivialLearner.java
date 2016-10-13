@@ -11,7 +11,6 @@ public class TrivialLearner {
     private Queue<Queue<String>> queries;
     private Queue<String> current;
     private MealyTeacher teacher;
-    private int inputNum;
 
     private static void logl(String m) {
         log("LEARNER", m);
@@ -20,7 +19,6 @@ public class TrivialLearner {
     TrivialLearner(Queue<Queue<String>> qs, MealyTeacher t) {
         this.queries = qs;
         this.teacher = t;
-        this.inputNum = 0;
     }
 
     public void learn() {

@@ -45,7 +45,7 @@ public class Transducer implements MealyTeacher {
 
         BlockingQueue<String> outputBuff = new LinkedBlockingQueue();
 
-        purpose.reset(new OutputCB(outputBuff)); 
+        purpose.reset(new OutputCB(outputBuff));
 
         logl("Running query: " + query2String(remInputs));
         step(outputBuff);
@@ -68,10 +68,11 @@ public class Transducer implements MealyTeacher {
                 int numDeltas = 0;
                 while (!remInputs.isEmpty()
                        && remInputs.element().equals(DELTA)) {
+                    remInputs.remove();
                     numDeltas++;
                 }
 
-                // new Thread(new OutputFetcher(buffer, input, numDeltas)).start();
+                new Thread(new OutputFetcher(buffer, input, numDeltas)).start();
             }
 
             

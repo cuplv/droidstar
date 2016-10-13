@@ -97,13 +97,14 @@ public class SpeechRecognizerLP implements LearningPurpose {
         }
 
         Listener(Callback c) {
+            super();
             this.forOutput = c;
             logl("STARTED A PURPOSE LISTENER!!!");
         }
 
         private void respond(String output) {
             logcb(output);
-            // forOutput.handleMessage(quickMessage(output));
+            forOutput.handleMessage(quickMessage(output));
             logcf(output);
         }
 
