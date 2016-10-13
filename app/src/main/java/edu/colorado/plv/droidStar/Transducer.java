@@ -171,6 +171,8 @@ public class Transducer implements MealyTeacher {
 
         private void serveDeltas(String o) {
             String output = o;
+            List<String> seen = new ArrayList();
+            seen.add(o);
             while (numDeltas > 0) {
                 if (output == BETA) {
                     // Output a beta for all waiting deltas
@@ -184,7 +186,17 @@ public class Transducer implements MealyTeacher {
                     // next delta
                     outputTrace.add(output);
                     numDeltas--;
-                    output = blockTakeOutput(buffer);
+                    
+                    String nextOutput = null;
+                    while (nextOutput == null) {
+                        nextOutput = blockTakeOutput(buffer);
+                        if (seen.contains(nextOutput)) {
+                            logl("Dropped duplicate output \"" + nextOutput + "\"");
+                            nextOutput = null;
+                        }
+                    }
+                    seen.add(nextOutput);
+                    output = nextOutput; // blockTakeOutput(buffer);
                 }
             }
             // if there are no deltas waiting, we don't collect any

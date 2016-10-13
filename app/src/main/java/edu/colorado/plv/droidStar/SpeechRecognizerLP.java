@@ -60,10 +60,12 @@ public class SpeechRecognizerLP implements LearningPurpose {
 
     SpeechRecognizerLP(Context c) {
         this.context = c;
+        this.sr = null;
     }
 
     public void reset(Callback c) {
-        this.sr = SpeechRecognizer.createSpeechRecognizer(this.context);
+        if (sr != null) sr.destroy();
+        sr = SpeechRecognizer.createSpeechRecognizer(this.context);
         sr.setRecognitionListener(new Listener(c));
         logl("LP has been reset.");
     }
