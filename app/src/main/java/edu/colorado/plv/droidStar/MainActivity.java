@@ -31,9 +31,6 @@ import static edu.colorado.plv.droidStar.Static.*;
 
 public class MainActivity extends Activity {
 
-    private Transducer ds;
-    private TrivialLearner learner;
-
     private static void logl(String m) {
         log("MAIN", m);
     }
@@ -48,7 +45,7 @@ public class MainActivity extends Activity {
 
             logl("Testing speech rec...");
 
-            this.ds = new Transducer(this, new SpeechRecognizerLP(this));
+            
 
             Queue<String> q1 = new ArrayDeque();
             q1.add(DELTA);
@@ -58,11 +55,27 @@ public class MainActivity extends Activity {
             q1.add(DELTA);
             q1.add(DELTA);
 
+            Queue<String> q2 = new ArrayDeque();
+            q2.add(DELTA);
+            q2.add(SpeechRecognizerLP.STOP);
+            q2.add(DELTA);
+            q2.add(SpeechRecognizerLP.START);
+            q2.add(DELTA);
+            q2.add(DELTA);
+
+
             Queue<Queue<String>> qs = new ArrayDeque();
             qs.add(q1);
+            qs.add(q2);
 
-            this.learner = new TrivialLearner(qs, this.ds);
-            this.learner.learn();
+            // AsyncTransducer ds = new AsyncTransducer(this, new SpeechRecognizerLP(this));
+
+            // TrivialLearner learner = new TrivialLearner(qs, ds);
+            // learner.learn();
+
+            Transducer trans = new Transducer(this, new SpeechRecognizerLP(this));
+            Runnable learner = new ThreadLearner(qs, trans);
+            new Thread(learner).start();
 
         } else {
             
