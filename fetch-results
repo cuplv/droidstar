@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# This collects the test results from the phone and builds diagrams
+
+APP=edu.upenn.aradha.starling
+PHONEDIR=/sdcard/Android/data/$APP/files
+RESULTS=results
+ALLDATA=$RESULTS/all.txt
+
+FETCH=$1
+DEVICE=$2
+
+case $FETCH in
+    "--fetch" )
+        echo "Getting results from device $DEVICE..."
+        case $DEVICE in
+            "" ) adb pull $PHONEDIR/$RESULTS ./ || exit 1
+                 ;;
+            * ) adb -s $DEVICE pull $PHONEDIR/$RESULTS ./ || exit 1
+                ;;
+        esac
+        ;;
+    "--nofetch" )
+        echo "Skipping fetch..."
+        ;;
+    * ) 
+        echo "Usage: ./fetch-results [--fetch|--nofetch] [DEVICE]"
+        exit 1
+        ;;
+esac
+
+cd $RESULTS
+
+dot -Tpng -O *.gv
+
+cd -
+
+if [ -f $ALLDATA ]; then
+    mv $ALLDATA $ALLDATA~ || exit 1
+fi
+
+touch $ALLDATA
+
+for datafile in $RESULTS/*data.txt; do
+    echo "Adding $datafile"
+    cat $datafile >> $ALLDATA || exit 1
+done
