@@ -1,105 +1,87 @@
-# DroidStar - Learning Typestates in the Android Framework #
+# Starling #
 
-**Current status:** Buggy Transducer proof of concept.  `L*` is left
-unimplemented; hoping to adapt [`LearnLib`](http://learnlib.de/) to
-fit in its place.
+## Running the experiments ##
 
-## Usage
+An
+[`Experiment`](app/src/main/java/edu/upenn/aradha/starling/Experiment.java)
+tests a list of `LearningPurpose`s in sequence, allowing you to fetch
+the results all at once at the end.
 
-Connect your phone to the computer and make sure `adb` can see and
-read it.  Open a terminal and start logging with:
+1. Edit
+   [MainActivity.java](app/src/main/java/edu/upenn/aradha/starling/MainActivity.java),
+   adding the classes you'd like to test the the `purposes` list.
+2. Build and install the app (how you do this depends on your setup).
+3. Tap the app on the phone to run it; you should just get a white
+   screen.
+4. Observe the experiments' progress by running `adb logcat | grep
+   'STARLING:Q\|TRANSDUCER:Q'`
 
-    adb logcat | grep DROIDSTAR
+The classes you can choose from for experiments are found in the
+[lp](app/src/main/java/edu/upenn/aradha/starling/droidStar/lp) source
+code directory.
 
-Install the app on the phone (it's been tested on Android 5.1.1), and
-run it.  You will be presented with a blank white screen.  All useful
-output is written on the log; you should see things now in the
-terminal you opened.
+### Running a certain class multiple times ###
 
-The output will show a proof-of-concept query run on the
-SpeechRecognizer class.  You can clean up the ouput by only listening
-to the Learner object with `grep DROIDSTAR:LEARNER`.  The main class
-where this experiment is defined is
-[`MainActivity`](app/src/main/java/edu/colorado/plv/droidStar/MainActivity.java).
+If you are suspicious as to the determinism of a particular learing
+purpose, you might want to test it two or three times and compare the
+results.
 
-## Design
+If you run the exact same class twice in a single experiment, the
+second run will overwrite the results of the first before you get a
+chance to see them.  To get around this, extend the class you want
+with a unique `shortName()`; you'll be able to get back the results
+for each run.  You can make this reasonably concise with anonymous
+classes:
 
-This app/library is modeled on the
-[*Learning IO Automata*](http://www.mbsd.cs.ru.nl/publications/papers/fvaan/LearningIOAs/paper.pdf)
-paper, with classes representing the components of the algorithm for
-learning an IO Automaton.
+    purposes.add(new AsyncTaskLP(this){
+            public String shortName() {return "AsyncTask-Run1";}
+        });
+    purposes.add(new AsyncTaskLP(this){
+            public String shortName() {return "AsyncTask-Run2";}
+        });
+    purposes.add(new AsyncTaskLP(this){
+            public String shortName() {return "AsyncTask-Run3";}
+        });
+    
+    Experiment.experiment(this, purposes);
 
-### Target IO Automaton
+## Fetching the results ##
 
-The IO automaton to be learned in this case is the actual Android
-Framework class.  In the proof-of-concept experiment, this is the
-[`SpeechRecognzer`](https://developer.android.com/reference/android/speech/SpeechRecognizer.html)
-class.
+Make sure you have the latest master of `Patchr`, and that you have
+`adb` and `dot` (graphviz) in your path.
 
-### Learning Purpose
+1. `cd Patchr`
+2. `./fetch-results --fetch DEVICE_ID` (the device id is only
+   necessary if you have multiple devices connected to your computer)
+3. This should pull the data and diagrams from the phone and put them
+   in the `Patchr/results` directory, building the diagram pngs with
+   `dot`.
+4. Note that this will overwrite results with the same name in the
+   `results` directory; review your changes before git-committing to
+   make sure you want the new ones over the old ones.
 
-The *learning purpose* which simplifies the target Automaton and defines
-which inputs are of interest is modeled by the
-[`LearningPurpose` interface](app/src/main/java/edu/colorado/plv/droidStar/LearningPurpose.java).
-In the current experiment, this is implemented by the
-[`SpeechRecognizerLP` class](app/src/main/java/edu/colorado/plv/droidStar/SpeechRecognizerLP.java).
+**Also note: The phone deletes previous all previously stored results
+each time the app is run!  Make sure to fetch results between runs.**
 
-Writing the `LearningPurpose` instance for a framework class includes
-determining which callback outputs are to be considered real
-state-changing outputs and which errors are relevant to the inputs
-being queried.  For example, the `SpeechRecognizer`'s `ERROR_CLIENT`
-error indicates that the class was misused by the calling app, and
-thus the query which produced it is invalid.  The `ERROR_NO_MATCH`
-error indicates that the recorded voice could not be recognized as
-speech.  This indicates nothing about the validity of the current
-query, and as such should probably just be ignored completely.
+## Interpreting the results ##
 
-### Transducer and Teacher
+When you fetch the results of an experiment from the phone, you get
+back three files.
 
-The "Transducer" is the set of rules which turns a *learning purpose*
-into a teacher compatible with Mealy Machine learners.  The transducer
-is modeled in this library by the
-[`Transducer` class](app/src/main/java/edu/colorado/plv/droidStar/Transducer.java).
-When instantiated with a `LearningPurpose`, a `Transducer` object
-implements the
-[`MealyTeacher` interface](app/src/main/java/edu/colorado/plv/droidStar/MealyTeacher.java).
-
-The `MealyTeacher` interface does not support the usual "equivalence"
-query; it only has a "membership" query.  Learning using this setup
-will require emulating the equivalence query with membership queries.
-
-### Learner
-
-The purpose of the transducer is to allow a learner for *Mealy
-Machines* learn an Interface Automaton (the *learning purpose*).  To
-work in this library, a Mealy Machine learner is written to interact
-with the `MealyTeacher` interface.
-
-For this experiment, the learner is represented by a dummy class (the
-[`TrivialLearner`](app/src/main/java/edu/colorado/plv/droidStar/TrivialLearner.java))
-which just asks the teacher for results on a series of inputs
-corresponding to a list of hardcoded queries.  For producing actual
-results, the hope is to adapt a class from
-[`LearnLib`](http://learnlib.de/) to fill this role.
-
-### Delta inputs
-
-In *Learning IO Automata*, the input set of a *learning purpose* is
-extended with a Δ (Delta) value.  To send a Δ as input means to allow
-the IO Atomaton to process and return an output value (the assumption
-is that if the learner wished, it could send any number of input
-values before the automaton could provide any output).
-
-This library is focused on framework classes that use callbacks to
-provide their outputs rather than return values, and thus a Δ
-following a normal input is implemented by registering the
-*continuation of the experiment* as the input's callback.  After
-providing the input, the learner idles until an output is returned.  A
-β (beta) value is returned in the absence of any called-back ouput
-after a set amount of time (defined by the `LearningPurpose`
-implementer with respect to the usual response times of its class's
-methods).
-
-This design choice follows into the rest of the library;
-the above components mainly communicate through asynchronous calls.
-
+- `${Class}-data.txt`: Metric data, to go in a table
+    - `data`: Time-stamp when experiment completed, maybe useful to
+      keep you from mixing up current and previous results
+    - `time`: Length of time (in milliseconds) that the experiment
+      took
+    - `mqueries`: Number of membership queries that were run
+    - `equeries`: Number of equivalence queries that were made
+    - `emqueries`: Number of membership queries that were made
+      inside the equivalence queries (mqueries does not include these)
+      
+- `${Class}-diagram.gv`: A diagram of the learned automaton that can
+  be rendered with `dot`
+  
+- `${Class}-log.txt`: A list of all membership queries that were run
+  during the experiment, in order(?).  If running an experiment twice
+  produces different results, comparing the log files may help explain
+  why.

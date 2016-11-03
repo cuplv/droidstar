@@ -13,7 +13,7 @@ import static edu.colorado.plv.droidStar.Static.*;
 public class Transducer implements MealyTeacher {
     private AsyncTransducer at;
 
-    Transducer(Context c, LearningPurpose p) {
+    public Transducer(Context c, LearningPurpose p) {
         this.at = new AsyncTransducer(c,p);
     }
 

@@ -1,4 +1,4 @@
-package edu.colorado.plv.droidStar;
+package edu.upenn.aradha.starling.droidStar.lp;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -12,13 +12,13 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 
+import edu.colorado.plv.droidStar.LearningPurpose;
+
 import static edu.colorado.plv.droidStar.Static.*;
 
-public class SpeechRecognizerLP implements LearningPurpose {
+public class SpeechRecognizerLP extends LearningPurpose {
 
     private SpeechRecognizer sr;
-    private Context context;
-    private Callback forOutput;
 
     private static Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -28,50 +28,65 @@ public class SpeechRecognizerLP implements LearningPurpose {
         .putExtra(RecognizerIntent.EXTRA_MAX_RESULTS,5)
         .putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
 
+    // INPUTS
     public static String START = "start";
     public static String STOP = "stop";
     public static String CANCEL = "cancel";
+
+    protected List<String> uniqueInputSet() {
+        List<String> inputs = new ArrayList();
+        inputs.add(START);
+        inputs.add(STOP);
+        inputs.add(CANCEL);
+
+        return inputs;
+    }
+
+    //OUTPUTS
     public static String RECORDING_STARTING = "starting";
     public static String RECORDING_FINISHED = "finished";
     public static String CLIENT_ERROR = "error";
     public static String ENV_ERROR = "environment_error";
 
-    public List<String> inputSet() {
-        List<String> is = new ArrayList();
-        is.add(START);
-        is.add(STOP);
-        is.add(CANCEL);
-        return is;
-    }
-
-    private static void logl(String m) {
-        log("PURPOSE", m);
-    }
-
     public boolean isError(String o) {
-        if (o.equals("error")) {
+        if (o.equals(CLIENT_ERROR)) {
             return true;
-        } else if (o.equals("environment_error")) {
+        } else if (o.equals(ENV_ERROR)) {
             return true;
         } else {
             return false;
         }       
     }
 
-    public int betaTimeout() {
-        return 9000;
+    // public boolean dropDoubleOutput() {
+    //     return true;
+    // }
+
+    public int postResetTimeout() {
+        return 500;
     }
 
-    SpeechRecognizerLP(Context c) {
-        this.context = c;
+    // public int safetyTimeout() {
+    //     return 2000;
+    // }
+
+    public String shortName() {
+        return "SpeechRecognizer";
+    }
+
+    public int betaTimeout() {
+        return 8000;
+    }
+
+    public SpeechRecognizerLP(Context c) {
+        super(c);
         this.sr = null;
     }
 
-    public void reset(Callback c) {
+    public void resetActions(Context context, Callback callback) {
         if (sr != null) sr.destroy();
-        sr = SpeechRecognizer.createSpeechRecognizer(this.context);
-        sr.setRecognitionListener(new Listener(c));
-        logl("LP has been reset.");
+        sr = SpeechRecognizer.createSpeechRecognizer(context);
+        sr.setRecognitionListener(new Listener(callback));
     }
 
     public void giveInput(String input) {
@@ -94,24 +109,9 @@ public class SpeechRecognizerLP implements LearningPurpose {
     public class Listener implements RecognitionListener {
         private Callback forOutput;
 
-        private void logcb(String callbackName) {
-            logl("Callback received: " + callbackName);
-        }
-
-        private void logcf(String callbackName) {
-            logl("Callback reported: " + callbackName);
-        }
-
         Listener(Callback c) {
-            super();
             this.forOutput = c;
-            logl("STARTED A PURPOSE LISTENER!!!");
-        }
-
-        private void respond(String output) {
-            logcb(output);
-            forOutput.handleMessage(quickMessage(output));
-            logcf(output);
+            // logl("STARTED A PURPOSE LISTENER!!!");
         }
 
         public void onReadyForSpeech(Bundle params) {
@@ -142,6 +142,7 @@ public class SpeechRecognizerLP implements LearningPurpose {
             case 9: // permissions not set right
                 respond(ENV_ERROR);
                 break;
+            case 7: // no matches
             case 6: // speech timeout
             case 1: // network timeout
             case 2: // server error
@@ -156,6 +157,7 @@ public class SpeechRecognizerLP implements LearningPurpose {
             respond(RECORDING_FINISHED);
         }
 
+        // Callbacks we don't pay attention to...
         public void onPartialResults(Bundle partialResults) {}
         public void onEvent(int eventType, Bundle params) {}
         public void onRmsChanged(float rmsdB) {}

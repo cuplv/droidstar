@@ -1,5 +1,6 @@
 package edu.colorado.plv.droidStar;
 
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -25,10 +26,16 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     private Queue<String> outputTrace;
     private Context mainContext;
     List<String> seen;
+    private int querySize;
+    BlockingQueue<String> outputBuff;
 
     private static void logl(String m) {
         log("TRANSDUCER", m);
-    }    
+    }
+
+    private static void logq(String m) {
+        log("TRANSDUCER:Q", m);
+    }
 
     AsyncTransducer(Context c, LearningPurpose p) {
         this.purpose = p;
@@ -36,15 +43,22 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     }
 
     public List<String> inputSet() {
-        List<String> inputs = new ArrayList(purpose.inputSet());
-        inputs.add(DELTA);
-
-        return inputs;
+        return purpose.inputSet();
     }
 
     public void membershipQuery(Runnable c, Queue<String> rs, Queue<String> is) {
         Handler mainHandler = new Handler(mainContext.getMainLooper());
         mainHandler.post(new RestartMain(c, rs, is));
+        querySize = is.size();
+        logq("---");
+        logq("IN  >>> " + query2String(is));
+    }
+
+    private void timeout(int t) {
+        if (t > 0) {
+            try {Thread.sleep(t);}
+            catch (Exception e) {logq("Interrupted during timeout!");}
+        }
     }
 
     public void mainMembershipQuery(Runnable c, Queue<String> rs, Queue<String> is) {
@@ -55,52 +69,97 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         outputTrace = new ArrayDeque();
         seen = new ArrayList();
 
-        BlockingQueue<String> outputBuff = new LinkedBlockingQueue();
-
-        purpose.reset(new OutputCB(outputBuff));
-
-        logl("Running query: " + query2String(remInputs));
-        step(outputBuff);
-    }
-
-    private void step(BlockingQueue<String> buffer) {
-
-        if (!remInputs.isEmpty()) {
-            
-            String input = remInputs.remove();
-
-            // If the input has already been determined as disabled,
-            // we just put a "-" in the outputs and move on
-            if (input.equals(REJECTED)) {
-                inputTrace.add(input);
-                outputTrace.add(REJECTED);
-                step(buffer);
-            } else {
-                if (!input.equals(DELTA)) purpose.giveInput(input);
-                int numDeltas = 0;
-                while (!remInputs.isEmpty()
-                       && remInputs.element().equals(DELTA)) {
-                    remInputs.remove();
-                    numDeltas++;
-                }
-
-                new Thread(new OutputFetcher(buffer, input, numDeltas)).start();
-            }
-
-            
+        if (purpose.validQuery(remInputs)) {
+            purpose.reset(new OutputCB());
+            timeout(purpose.postResetTimeout());
+            logl("Running query: " + query2String(remInputs));
+            step();
         } else {
-            callback();
+            returnWithError();
         }
     }
 
-    private void callback() {
-        String out = query2String(outputTrace);
-        logl("Finished query with outputs: " + out);
+    // After checking that there are still inputs to go and that we
+    // haven't missed an error that should be attributed to a previous
+    // input, we continue with the next input.
+    private void step() {
+        if (!remInputs.isEmpty()) {
+            nextInput();
+        } else {
+            returnSuccessfully();
+        }
+    }
 
-        // Put all the outputs where the caller expects them to be
+    // Pop the next input + deltas from the query and try to run it
+    private void nextInput() {
+
+        // First flush outputs produced by the previous block of
+        // inputs
+        outputBuff = new LinkedBlockingQueue();
+
+        // Now gather the inputs and deltas in this block
+        Queue<String> inputs = popInputs();
+        int numDeltas = popDeltas();
+
+        try {
+            performInputs(inputs);
+            fetchOutputs(numDeltas);
+        } catch (Exception e) {
+            logq("Input Exception; error");
+            returnWithError();
+        }
+    }
+
+    private void performInputs(Queue<String> inputs) throws Exception {
+        for (String input : inputs) {
+            inputTrace.add(input);
+            outputTrace.add(ACCEPTED);
+        }
+        for (String input : inputs) {
+            purpose.giveInput(input);
+        }
+    }
+
+    private void fetchOutputs(int numDeltas) {
+        new Thread(new OutputFetcher(numDeltas)).start();
+    }
+
+    private Queue<String> popInputs() {
+        Queue<String> inputs = new ArrayDeque();
+        while (!remInputs.isEmpty()
+               && !remInputs.element().equals(DELTA)) {
+            inputs.add(remInputs.remove());
+        }
+        return inputs;
+    }
+
+    private int popDeltas() {
+        int ds = 0;
+        while (!remInputs.isEmpty()
+               && remInputs.element().equals(DELTA)) {
+            remInputs.remove();
+            ds++;
+        }
+        return ds;
+    }
+
+    private void returnSuccessfully() {
+        logq("OUT >>> " + query2String(outputTrace));
         for (String o : outputTrace) {
             results.add(o);
         }
+        returnToCaller();
+    }
+
+    private void returnWithError() {
+        logq("OUT >>> " + query2String(outputTrace) + " (error)");
+        for (String o : outputTrace) {
+            results.add(REJECTED);
+        }
+        returnToCaller();
+    }
+
+    private void returnToCaller() {
         // Notify caller that we're finished
         new Thread(finalCallback).start();
     }
@@ -117,123 +176,73 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         }
     }
 
-    private class BetaTimer implements Runnable {
-        private int timeout;
-        private Queue<String> buffer;
-
-        BetaTimer(Queue<String> b, int t) {
-            this.buffer = b;
-            this.timeout = t;
-        }
-
-        public void run() {
-            try {
-                Thread.sleep(timeout);
-            } catch (Exception e) {
-                logl("Couldn't sleep");
-            }
-            maybePutBeta(buffer);
-        }
-    }
-
-
     // I'm really sorry about the messiness in this class.  Bugs kept
     // popping up and they needed very quick patches. -Nick
     private class OutputFetcher implements Runnable {
-        private String input;
         private int numDeltas;
-        private BlockingQueue<String> buffer;
 
-        OutputFetcher(BlockingQueue<String> b, String i, int d) {
-            this.input = i;
+        OutputFetcher(int d) {
             this.numDeltas = d;
-            this.buffer = b;
         }
+
 
         public void run() {
+            serveDeltas();
+        }
 
-            // Start timer for Beta outputs; if this runs out, we'll
-            // stop waiting for real outputs, assign beta outputs, and
-            // return.
-            betaTimer(buffer, purpose.betaTimeout());
+        private void deltaRecord(List<String> seen, String o) {
+            if (!purpose.dropDoubleOutput()
+                || o.equals(BETA)
+                || !seen.contains(o)) {
 
-            String output = blockTakeOutput(buffer);
-
-            if (!purpose.isError(output)) {
-                if (!input.equals(DELTA)) {
-                    inputTrace.add(input);
-                    outputTrace.add(ACCEPTED);
-                } else {
-                    numDeltas++;
-                }
-                serveDeltas(output);
+                inputTrace.add(DELTA);
+                outputTrace.add(o);
+                seen.add(o);
+                numDeltas--;
             } else {
-                ArrayDeque fixedQuery = new ArrayDeque();
-
-                // Make a new query that replaces the failed input
-                // we're looking at with a REJECTED note
-                fixedQuery.addAll(inputTrace);
-                fixedQuery.add(REJECTED);
-                for (int i = 0; i<numDeltas; i++) {
-                    fixedQuery.add(DELTA);
-                }
-                fixedQuery.addAll(remInputs);
-
-                // And then start the query over again
-                logl("Encountered invald input, restarting query...");
-                Handler mainHandler = new Handler(mainContext.getMainLooper());
-                mainHandler.post(new RestartMain(finalCallback, results, fixedQuery));
+                logq("        (Dropped duplicate output \"" + o + "\")");
             }
         }
 
-        private void betaTimer(Queue<String> b, int t) {
-            logl("Starting beta timer...");
-            BetaTimer timer = new BetaTimer(b,t);
-            new Thread(timer).start();
-        }
-
-        private void serveDeltas(String o) {
-            String output = o;
-            
-            seen.add(o);
+        private void betaShort(List<String> seen) {
             while (numDeltas > 0) {
-                if (output == BETA) {
-                    // Output a beta for all waiting deltas
-                    for (int i=0; i<numDeltas; i++) {
-                        inputTrace.add(DELTA);
-                        outputTrace.add(BETA);
-                    }
-                    // break loop
-                    numDeltas = 0;
-                } else {
-                    // Record this output and get a new output for the
-                    // next delta
-                    outputTrace.add(output);
-                    numDeltas--;
+                deltaRecord(seen, BETA);
+            }
+        }
 
-                    if (numDeltas > 0) {
-                        String nextOutput = null;
-                        while (nextOutput == null) {
-                            nextOutput = blockTakeOutput(buffer);
-                            if (seen.contains(nextOutput)
-                                && (!nextOutput.equals(BETA))) {
-                                logl("Dropped duplicate output \""
-                                     + nextOutput
-                                     + "\"");
-                                nextOutput = null;
-                            }
-                        }
-                        seen.add(nextOutput);
-                        output = nextOutput; // blockTakeOutput(buffer);
+        private void serveDeltas() {
+            List<String> seen = new ArrayList();
+            boolean done = false;
+            boolean returned = false;
+            String output;
+
+            if (numDeltas > 0) {
+                while (numDeltas > 0 && !returned) {
+                    output = blockTakeOutput(outputBuff);
+                    
+                    if (output.equals(BETA)) {
+                        betaShort(seen);
+                    } else if (purpose.isError(output)) {
+                        logq("delta caught error");
+                        returnWithError();
+                        returned = true;
+                    } else {
+                        deltaRecord(seen, output);
                     }
                 }
+                
+                // go back to the main thread for the next step, if we
+                // haven't already exited
+                if (!returned) stepAgain();
+            } else {
+                if (noMissedErrors()) {
+                    stepAgain();
+                } else {
+                    logq("post-delta caught error");
+                    returnWithError();
+                }
             }
-            // if there are no deltas waiting, we don't collect any
-            // outputs
-
-            // and now we return to the main thread
-            Handler mainHandler = new Handler(mainContext.getMainLooper());
-            mainHandler.post(new StepMain(buffer));
+                
         }
 
         private String blockTakeOutput(BlockingQueue<String> buffer) {
@@ -241,27 +250,44 @@ public class AsyncTransducer implements AsyncMealyTeacher {
             boolean done = false;
             while (!done) {
                 try {
-                    output = buffer.take();
+                    output = buffer.poll(purpose.betaTimeout(),
+                                         TimeUnit.MILLISECONDS);
                     done = true;
                 } catch (Exception e) {
                     logl("Output take interrupted? Continuing...");
                 }
             }
+            if (output == null) output = BETA;
+            
             logl("BlockTake returning with " + output + "...");
             return output;
         }
 
+        // If the outputBuff has been previously instantiated, check to
+        // see if it contains any "-" outputs
+        private boolean noMissedErrors() {
+            timeout(purpose.safetyTimeout());
+            timeout(purpose.betaTimeout());
+
+            boolean errors = false;
+            if (outputBuff != null) {
+                for (String output : outputBuff) {
+                    errors = errors || purpose.isError(output);
+                }
+            }
+            return !errors;
+        }
+
+    }
+
+    private void stepAgain() {
+        Handler mainHandler = new Handler(mainContext.getMainLooper());
+        mainHandler.post(new StepMain());
     }
 
     private class StepMain implements Runnable {
-        private BlockingQueue<String> buffer;
-
-        StepMain(BlockingQueue<String> b) {
-            this.buffer = b;
-        }
-
         public void run() {
-            step(buffer);
+            step();
         }
     }
 
@@ -282,15 +308,9 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     }
 
     private class OutputCB implements Callback {
-        private Queue<String> buffer;
-
-        OutputCB(Queue<String> b) {
-            this.buffer = b;
-        }
-
         public boolean handleMessage(Message m) {
             String output = readMessage(m);
-            reportOutput(buffer, output);
+            reportOutput(outputBuff, output);
             return true;
         }
     }
