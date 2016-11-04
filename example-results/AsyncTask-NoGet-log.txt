@@ -1,0 +1,39 @@
+[exec, delta, delta, delta] ==> [exec, +, delta, postexec, delta, beta, delta, beta]
+[cancel, cancel, cancel] ==> [cancel, +, cancel, +, cancel, +]
+[cancel, delta, cancel] ==> [cancel, +, delta, cancelled, cancel, +]
+[exec, delta, delta, cancel] ==> [exec, +, delta, postexec, delta, beta, cancel, +]
+[exec, cancel] ==> [exec, +, cancel, +]
+[exec, delta, cancel, cancel] ==> [exec, +, delta, postexec, cancel, +, cancel, +]
+[exec, delta, exec] ==> ERROR
+[cancel] ==> [cancel, +]
+[cancel, exec] ==> [cancel, +, exec, +]
+[exec, delta, cancel, delta] ==> [exec, +, delta, postexec, cancel, +, delta, beta]
+[exec, cancel, cancel, cancel] ==> [exec, +, cancel, +, cancel, +, cancel, +]
+[exec, cancel, delta, exec] ==> ERROR
+[cancel, cancel, delta] ==> [cancel, +, cancel, +, delta, cancelled]
+[cancel, exec, exec] ==> ERROR
+[exec, delta, cancel] ==> [exec, +, delta, postexec, cancel, +]
+[delta, cancel] ==> [delta, beta, cancel, +]
+[delta] ==> [delta, beta]
+[cancel, cancel] ==> [cancel, +, cancel, +]
+[exec, cancel, delta, delta] ==> [exec, +, cancel, +, delta, cancelled, delta, beta]
+[exec, delta] ==> [exec, +, delta, postexec]
+[exec, cancel, cancel, exec] ==> ERROR
+[exec, cancel, cancel, delta] ==> [exec, +, cancel, +, cancel, +, delta, cancelled]
+[exec, cancel, delta, cancel] ==> [exec, +, cancel, +, delta, cancelled, cancel, +]
+[cancel, delta] ==> [cancel, +, delta, cancelled]
+[exec, cancel, exec] ==> ERROR
+[delta, exec] ==> [delta, beta, exec, +]
+[cancel, delta, delta] ==> [cancel, +, delta, cancelled, delta, beta]
+[exec] ==> [exec, +]
+[exec, delta, delta] ==> [exec, +, delta, postexec, delta, beta]
+[cancel, exec, delta] ==> [cancel, +, exec, +, delta, cancelled]
+[cancel, exec, cancel] ==> [cancel, +, exec, +, cancel, +]
+[cancel, delta, exec] ==> ERROR
+[exec, exec] ==> ERROR
+[cancel, cancel, exec] ==> [cancel, +, cancel, +, exec, +]
+[exec, cancel, cancel] ==> [exec, +, cancel, +, cancel, +]
+[exec, cancel, delta] ==> [exec, +, cancel, +, delta, cancelled]
+[exec, delta, cancel, exec] ==> ERROR
+[exec, delta, delta, exec] ==> ERROR
+[delta, delta] ==> [delta, beta, delta, beta]

@@ -1,0 +1,8 @@
+- class: SpeechRecognizer
+  date: 1477116686271
+  time: 3460622
+  mqueries: 1968
+  rmqueries: 293
+  equeries: 3
+  emqueries: 1936
+  ermqueries: 103

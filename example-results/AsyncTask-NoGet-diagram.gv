@@ -1,0 +1,14 @@
+digraph {
+  0 -> 1[label=exec];
+  0 -> 2[label=cancel];
+  0 -> 0[label=delta_beta];
+  1 -> 4[label=cancel];
+  1 -> 5[label=delta_postexec];
+  2 -> 4[label=exec];
+  2 -> 2[label=cancel];
+  2 -> 5[label=delta_cancelled];
+  4 -> 4[label=cancel];
+  4 -> 5[label=delta_cancelled];
+  5 -> 5[label=cancel];
+  5 -> 5[label=delta_beta];
+}

@@ -1,0 +1,24 @@
+[start, delta, cancel] ==> [start, +, delta, finished, cancel, +]
+[cancel, delta] ==> [cancel, +, delta, beta]
+[start, cancel, cancel, cancel] ==> [start, +, cancel, +, cancel, +, cancel, +]
+[start, cancel, cancel, delta] ==> [start, +, cancel, +, cancel, +, delta, beta]
+[start, cancel, delta, start] ==> ERROR
+[cancel] ==> [cancel, +]
+[start, cancel, cancel, start] ==> ERROR
+[cancel, start] ==> [cancel, +, start, +]
+[start] ==> [start, +]
+[start, cancel, start] ==> ERROR
+[start, cancel] ==> [start, +, cancel, +]
+[start, cancel, delta] ==> [start, +, cancel, +, delta, beta]
+[start, cancel, cancel] ==> [start, +, cancel, +, cancel, +]
+[delta, cancel] ==> [delta, beta, cancel, +]
+[delta, start] ==> [delta, beta, start, +]
+[delta] ==> [delta, beta]
+[cancel, cancel] ==> [cancel, +, cancel, +]
+[start, delta, delta] ==> [start, +, delta, finished, delta, beta]
+[start, cancel, delta, delta] ==> [start, +, cancel, +, delta, beta, delta, beta]
+[delta, delta] ==> [delta, beta, delta, beta]
+[start, start] ==> ERROR
+[start, delta, start] ==> ERROR
+[start, cancel, delta, cancel] ==> [start, +, cancel, +, delta, beta, cancel, +]
+[start, delta] ==> [start, +, delta, finished]

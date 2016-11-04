@@ -1,0 +1,11 @@
+digraph {
+  0 -> 4[label=close];
+  0 -> 0[label=cancel];
+  0 -> 1[label=suggest];
+  1 -> 2[label=close];
+  1 -> 1[label=cancel];
+  1 -> 2[label=delta_results];
+  2 -> 2[label=close];
+  4 -> 4[label=close];
+  4 -> 2[label=suggest];
+}

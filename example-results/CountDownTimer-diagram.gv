@@ -1,0 +1,9 @@
+digraph {
+  0 -> 1[label=start];
+  0 -> 0[label=cancel];
+  0 -> 0[label=delta_beta];
+  1 -> 3[label=cancel];
+  1 -> 3[label=delta_finished];
+  3 -> 3[label=cancel];
+  3 -> 3[label=delta_beta];
+}

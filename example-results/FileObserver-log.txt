@@ -1,0 +1,116 @@
+[modify, delta, delete, modify] ==> ERROR
+[modify, delta, modify, delta] ==> [modify, +, delta, modified, modify, +, delta, modified]
+[delete, delete] ==> ERROR
+[modify, delta, stop, stop] ==> [modify, +, delta, modified, stop, +, stop, +]
+[modify, delta, delete, delta] ==> [modify, +, delta, modified, delete, +, delta, deleted]
+[stop, modify] ==> [stop, +, modify, +]
+[modify, delta, stop, modify] ==> [modify, +, delta, modified, stop, +, modify, +]
+[stop, stop] ==> [stop, +, stop, +]
+[delta, modify] ==> [delta, beta, modify, +]
+[delta, delete] ==> [delta, beta, delete, +]
+[modify, delta, delta, modify] ==> [modify, +, delta, modified, delta, modified, modify, +]
+[modify] ==> [modify, +]
+[stop] ==> [stop, +]
+[delta] ==> [delta, beta]
+[modify, stop] ==> ERROR
+[delta, stop] ==> [delta, beta, stop, +]
+[modify, delta, delta, delete] ==> [modify, +, delta, modified, delta, modified, delete, +]
+[modify, delta, modify] ==> [modify, +, delta, modified, modify, +]
+[modify, delta, stop, delete] ==> [modify, +, delta, modified, stop, +, delete, +]
+[modify, delta, delete, delete] ==> ERROR
+[modify, delta, modify, modify] ==> ERROR
+[modify, delta] ==> [modify, +, delta, modified]
+[delete] ==> [delete, +]
+[modify, delta, delta] ==> [modify, +, delta, modified, delta, modified]
+[delete, delta, stop] ==> [delete, +, delta, deleted, stop, +]
+[delete, modify] ==> ERROR
+[delete, delta, delete] ==> [delete, +, delta, deleted, delete, +]
+[modify, delta, stop] ==> [modify, +, delta, modified, stop, +]
+[modify, delta, delta, delta] ==> [modify, +, delta, modified, delta, modified, delta, beta]
+[modify, delta, delete, stop] ==> ERROR
+[stop, delta] ==> [stop, +, delta, beta]
+[modify, delta, stop, delta] ==> [modify, +, delta, modified, stop, +, delta, beta]
+[delete, delta, modify] ==> [delete, +, delta, deleted, modify, +]
+[modify, delta, modify, delete] ==> ERROR
+[modify, delete] ==> ERROR
+[modify, modify] ==> ERROR
+[delete, stop] ==> ERROR
+[modify, delta, delta, stop] ==> [modify, +, delta, modified, delta, modified, stop, +]
+[delta, delta] ==> [delta, beta, delta, beta]
+[delete, delta] ==> [delete, +, delta, deleted]
+[delete, delta, delta] ==> [delete, +, delta, deleted, delta, beta]
+[stop, delete] ==> [stop, +, delete, +]
+[modify, delta, modify, stop] ==> ERROR
+[modify, delta, delete] ==> [modify, +, delta, modified, delete, +]
+[modify, delta, delete, modify] ==> ERROR
+[modify, delta, modify, delta] ==> [modify, +, delta, modified, modify, +, delta, modified]
+[stop, delta, delta] ==> [stop, +, delta, beta, delta, beta]
+[delta, modify, delta] ==> [delta, beta, modify, +, delta, modified]
+[stop, stop, delta] ==> [stop, +, stop, +, delta, beta]
+[modify, delta, stop, modify] ==> [modify, +, delta, modified, stop, +, modify, +]
+[stop, stop] ==> [stop, +, stop, +]
+[delta, delete] ==> [delta, beta, delete, +]
+[stop, delete, modify] ==> ERROR
+[modify] ==> [modify, +]
+[stop] ==> [stop, +]
+[delta] ==> [delta, beta]
+[modify, stop] ==> ERROR
+[stop, modify, delta, stop] ==> [stop, +, modify, +, delta, beta, stop, +]
+[stop, delete, delta] ==> [stop, +, delete, +, delta, beta]
+[modify, delta, delta, delete] ==> [modify, +, delta, modified, delta, modified, delete, +]
+[stop, stop, stop] ==> [stop, +, stop, +, stop, +]
+[modify, delta, modify] ==> [modify, +, delta, modified, modify, +]
+[modify, delta, delete, delete] ==> ERROR
+[modify, delta] ==> [modify, +, delta, modified]
+[stop, stop, modify] ==> [stop, +, stop, +, modify, +]
+[stop, modify, delta, modify, delta] ==> [stop, +, modify, +, delta, beta, modify, +, delta, beta]
+[delete, modify] ==> ERROR
+[modify, delta, delta, delta] ==> [modify, +, delta, modified, delta, modified, delta, beta]
+[stop, modify, delta] ==> [stop, +, modify, +, delta, beta]
+[stop, modify, modify] ==> ERROR
+[stop, modify, delta, modify] ==> [stop, +, modify, +, delta, beta, modify, +]
+[modify, delta, stop, delta] ==> [modify, +, delta, modified, stop, +, delta, beta]
+[stop, modify, delete] ==> ERROR
+[delete, delta, modify] ==> [delete, +, delta, deleted, modify, +]
+[modify, delta, modify, delete] ==> ERROR
+[stop, modify, delta, delete] ==> [stop, +, modify, +, delta, beta, delete, +]
+[modify, delete] ==> ERROR
+[delete, delta, modify, delta] ==> [delete, +, delta, deleted, modify, +, delta, beta]
+[stop, stop, modify, delta] ==> [stop, +, stop, +, modify, +, delta, beta]
+[delta, delta] ==> [delta, beta, delta, beta]
+[delete, delta, delta] ==> [delete, +, delta, deleted, delta, beta]
+[modify, delta, delete] ==> [modify, +, delta, modified, delete, +]
+[stop, delta, delete] ==> [stop, +, delta, beta, delete, +]
+[delete, delete] ==> ERROR
+[modify, delta, stop, stop] ==> [modify, +, delta, modified, stop, +, stop, +]
+[stop, modify, stop] ==> ERROR
+[modify, delta, delete, delta] ==> [modify, +, delta, modified, delete, +, delta, deleted]
+[stop, modify] ==> [stop, +, modify, +]
+[stop, delta, modify, delta] ==> [stop, +, delta, beta, modify, +, delta, beta]
+[] ==> []
+[delta, modify] ==> [delta, beta, modify, +]
+[stop, delta, stop] ==> [stop, +, delta, beta, stop, +]
+[modify, delta, delta, modify] ==> [modify, +, delta, modified, delta, modified, modify, +]
+[modify, delta, delta, modify, delta] ==> [modify, +, delta, modified, delta, modified, modify, +, delta, modified]
+[delta, stop] ==> [delta, beta, stop, +]
+[stop, delta, modify] ==> [stop, +, delta, beta, modify, +]
+[modify, delta, stop, delete] ==> [modify, +, delta, modified, stop, +, delete, +]
+[stop, modify, delta, delta] ==> [stop, +, modify, +, delta, beta, delta, beta]
+[modify, delta, modify, modify] ==> ERROR
+[delete] ==> [delete, +]
+[modify, delta, delta] ==> [modify, +, delta, modified, delta, modified]
+[stop, delete, delete] ==> ERROR
+[delete, delta, stop] ==> [delete, +, delta, deleted, stop, +]
+[delete, delta, delete] ==> [delete, +, delta, deleted, delete, +]
+[modify, delta, stop] ==> [modify, +, delta, modified, stop, +]
+[modify, delta, delete, stop] ==> ERROR
+[stop, delta] ==> [stop, +, delta, beta]
+[modify, modify] ==> ERROR
+[delete, stop] ==> ERROR
+[modify, delta, delta, stop] ==> [modify, +, delta, modified, delta, modified, stop, +]
+[delete, delta] ==> [delete, +, delta, deleted]
+[stop, delete] ==> [stop, +, delete, +]
+[modify, delta, modify, stop] ==> ERROR
+[stop, delete, stop] ==> ERROR
+[modify, delta, stop, modify, delta] ==> [modify, +, delta, modified, stop, +, modify, +, delta, beta]
+[stop, stop, delete] ==> [stop, +, stop, +, delete, +]

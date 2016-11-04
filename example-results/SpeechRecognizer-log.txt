@@ -1,0 +1,436 @@
+[stop, delta, delta] ==> [stop, +, delta, beta, delta, beta]
+[stop, delta, cancel] ==> [stop, +, delta, beta, cancel, +]
+[stop, stop, delta] ==> [stop, +, stop, +, delta, beta]
+[stop, delta, start] ==> ERROR
+[stop, stop] ==> [stop, +, stop, +]
+[stop, cancel, cancel] ==> [stop, +, cancel, +, cancel, +]
+[start] ==> [start, +]
+[start, cancel, start] ==> [start, +, cancel, +, start, +]
+[cancel, stop] ==> [cancel, +, stop, +]
+[stop] ==> [stop, +]
+[delta] ==> [delta, beta]
+[stop, stop, stop] ==> [stop, +, stop, +, stop, +]
+[start, cancel, start, cancel] ==> [start, +, cancel, +, start, +, cancel, +]
+[start, delta, delta, stop] ==> ERROR
+[start, delta, delta, cancel] ==> [start, +, delta, starting, delta, finished, cancel, +]
+[start, delta] ==> [start, +, delta, starting]
+[start, cancel, start, start] ==> ERROR
+[start, delta, stop, start] ==> ERROR
+[cancel, delta] ==> [cancel, +, delta, beta]
+[start, delta, cancel, cancel] ==> [start, +, delta, starting, cancel, +, cancel, +]
+[start, delta, stop, stop] ==> [start, +, delta, starting, stop, +, stop, +]
+[start, cancel, delta, start] ==> [start, +, cancel, +, delta, beta, start, +]
+[stop, cancel, delta] ==> [stop, +, cancel, +, delta, beta]
+[start, cancel] ==> [start, +, cancel, +]
+[start, stop] ==> [start, +, stop, +]
+[start, stop, cancel] ==> [start, +, stop, +, cancel, +]
+[delta, start] ==> [delta, beta, start, +]
+[delta, delta] ==> [delta, beta, delta, beta]
+[start, stop, start] ==> ERROR
+[stop, start] ==> ERROR
+[stop, cancel] ==> [stop, +, cancel, +]
+[start, cancel, stop] ==> ERROR
+[start, delta, stop] ==> [start, +, delta, starting, stop, +]
+[stop, delta, stop] ==> [stop, +, delta, beta, stop, +]
+[cancel] ==> [cancel, +]
+[start, delta, cancel, start] ==> [start, +, delta, starting, cancel, +, start, +]
+[cancel, start] ==> [cancel, +, start, +]
+[start, cancel, cancel] ==> [start, +, cancel, +, cancel, +]
+[delta, cancel] ==> [delta, beta, cancel, +]
+[delta, stop] ==> [delta, beta, stop, +]
+[start, cancel, start, delta] ==> [start, +, cancel, +, start, +, delta, beta]
+[cancel, cancel] ==> [cancel, +, cancel, +]
+[start, delta, delta, delta] ==> [start, +, delta, starting, delta, finished, delta, beta]
+[stop, cancel, start] ==> ERROR
+[start, delta, delta] ==> [start, +, delta, starting, delta, finished]
+[start, cancel, delta, delta] ==> [start, +, cancel, +, delta, beta, delta, beta]
+[start, start] ==> ERROR
+[start, delta, cancel, delta] ==> [start, +, delta, starting, cancel, +, delta, beta]
+[start, stop, stop] ==> [start, +, stop, +, stop, +]
+[stop, stop, cancel] ==> [stop, +, stop, +, cancel, +]
+[start, delta, cancel] ==> [start, +, delta, starting, cancel, +]
+[start, cancel, cancel, cancel] ==> [start, +, cancel, +, cancel, +, cancel, +]
+[start, cancel, cancel, delta] ==> [start, +, cancel, +, cancel, +, delta, beta]
+[start, delta, delta, start] ==> [start, +, delta, starting, delta, finished, start, +]
+[stop, stop, start] ==> ERROR
+[start, cancel, start, stop] ==> [start, +, cancel, +, start, +, stop, +]
+[stop, delta] ==> [stop, +, delta, beta]
+[start, cancel, cancel, start] ==> [start, +, cancel, +, cancel, +, start, +]
+[stop, cancel, stop] ==> [stop, +, cancel, +, stop, +]
+[start, cancel, delta] ==> [start, +, cancel, +, delta, beta]
+[start, delta, cancel, stop] ==> ERROR
+[start, cancel, cancel, stop] ==> ERROR
+[start, delta, stop, delta] ==> [start, +, delta, starting, stop, +, delta, finished]
+[start, delta, start] ==> ERROR
+[start, cancel, delta, cancel] ==> [start, +, cancel, +, delta, beta, cancel, +]
+[start, stop, delta] ==> [start, +, stop, +, delta, starting]
+[start, delta, stop, cancel] ==> [start, +, delta, starting, stop, +, cancel, +]
+[start, cancel, delta, stop] ==> ERROR
+[start, stop, stop, cancel] ==> [start, +, stop, +, stop, +, cancel, +]
+[stop, delta, delta] ==> [stop, +, delta, beta, delta, beta]
+[stop, delta, cancel] ==> [stop, +, delta, beta, cancel, +]
+[stop, stop, stop, cancel] ==> [stop, +, stop, +, stop, +, cancel, +]
+[start, cancel, start, cancel, cancel, start] ==> [start, +, cancel, +, start, +, cancel, +, cancel, +, start, +]
+[stop, cancel, cancel, start] ==> ERROR
+[start, cancel, start, delta, cancel] ==> [start, +, cancel, +, start, +, delta, beta, cancel, +]
+[cancel, cancel, stop] ==> [cancel, +, cancel, +, stop, +]
+[stop, cancel, cancel] ==> [stop, +, cancel, +, cancel, +]
+[start] ==> [start, +]
+[cancel, stop] ==> [cancel, +, stop, +]
+[stop, stop, delta, stop] ==> [stop, +, stop, +, delta, beta, stop, +]
+[start, stop, stop, delta] ==> [start, +, stop, +, stop, +, delta, starting]
+[delta] ==> [delta, beta]
+[cancel, start, delta] ==> [cancel, +, start, +, delta, starting]
+[stop, delta, cancel, cancel] ==> [stop, +, delta, beta, cancel, +, cancel, +]
+[start, cancel, start, cancel, delta] ==> [start, +, cancel, +, start, +, cancel, +, delta, beta]
+[start, delta, stop, cancel, start] ==> [start, +, delta, starting, stop, +, cancel, +, start, +]
+[stop, delta, delta, stop] ==> [stop, +, delta, beta, delta, beta, stop, +]
+[start, delta, delta, cancel] ==> [start, +, delta, starting, delta, finished, cancel, +]
+[start, delta] ==> [start, +, delta, starting]
+[delta, delta, start] ==> [delta, beta, delta, beta, start, +]
+[start, delta, stop, start] ==> ERROR
+[cancel, delta] ==> [cancel, +, delta, beta]
+[start, cancel, start, delta, cancel, start] ==> [start, +, cancel, +, start, +, delta, beta, cancel, +, start, +]
+[start, delta, cancel, cancel] ==> [start, +, delta, starting, cancel, +, cancel, +]
+[stop, cancel, cancel, delta] ==> [stop, +, cancel, +, cancel, +, delta, beta]
+[delta, start, start] ==> ERROR
+[start, cancel, delta, start] ==> [start, +, cancel, +, delta, beta, start, +]
+[start, cancel] ==> [start, +, cancel, +]
+[stop, delta, cancel, start] ==> ERROR
+[start, stop, cancel] ==> [start, +, stop, +, cancel, +]
+[delta, cancel, cancel] ==> [delta, beta, cancel, +, cancel, +]
+[cancel, start, cancel] ==> [cancel, +, start, +, cancel, +]
+[start, cancel, cancel, cancel, start] ==> [start, +, cancel, +, cancel, +, cancel, +, start, +]
+[stop, stop, stop, stop] ==> [stop, +, stop, +, stop, +, stop, +]
+[start, stop, start] ==> ERROR
+[stop, start] ==> ERROR
+[cancel, delta, stop] ==> [cancel, +, delta, beta, stop, +]
+[start, stop, delta, start] ==> ERROR
+[start, cancel, start, delta, stop] ==> [start, +, cancel, +, start, +, delta, beta, stop, +]
+[stop, stop, delta, cancel] ==> [stop, +, stop, +, delta, beta, cancel, +]
+[] ==> []
+[stop, delta, stop] ==> [stop, +, delta, beta, stop, +]
+[start, cancel, start, delta, delta] ==> [start, +, cancel, +, start, +, delta, beta, delta, beta]
+[delta, stop, cancel] ==> [delta, beta, stop, +, cancel, +]
+[stop, delta, delta, start] ==> ERROR
+[stop, delta, stop, cancel] ==> [stop, +, delta, beta, stop, +, cancel, +]
+[start, cancel, start, delta] ==> [start, +, cancel, +, start, +, delta, beta]
+[cancel, cancel] ==> [cancel, +, cancel, +]
+[start, stop, cancel, delta] ==> [start, +, stop, +, cancel, +, delta, beta]
+[start, delta, delta, delta] ==> [start, +, delta, starting, delta, finished, delta, beta]
+[stop, cancel, stop, stop] ==> [stop, +, cancel, +, stop, +, stop, +]
+[stop, cancel, cancel, cancel] ==> [stop, +, cancel, +, cancel, +, cancel, +]
+[start, stop, cancel, start] ==> [start, +, stop, +, cancel, +, start, +]
+[start, stop, stop, start] ==> ERROR
+[start, delta, cancel] ==> [start, +, delta, starting, cancel, +]
+[delta, stop, delta] ==> [delta, beta, stop, +, delta, beta]
+[start, stop, stop, stop] ==> [start, +, stop, +, stop, +, stop, +]
+[delta, start, cancel] ==> [delta, beta, start, +, cancel, +]
+[delta, stop, start] ==> ERROR
+[start, stop, delta, delta] ==> [start, +, stop, +, delta, starting, delta, finished]
+[start, delta, delta, start] ==> [start, +, delta, starting, delta, finished, start, +]
+[start, cancel, start, cancel, stop] ==> ERROR
+[delta, start, delta] ==> [delta, beta, start, +, delta, starting]
+[stop, cancel, stop, cancel] ==> [stop, +, cancel, +, stop, +, cancel, +]
+[delta, delta, cancel] ==> [delta, beta, delta, beta, cancel, +]
+[stop, delta, cancel, stop] ==> [stop, +, delta, beta, cancel, +, stop, +]
+[stop, stop, delta, start] ==> ERROR
+[stop, delta, delta, delta] ==> [stop, +, delta, beta, delta, beta, delta, beta]
+[stop, cancel, delta, stop] ==> [stop, +, cancel, +, delta, beta, stop, +]
+[stop, cancel, stop, delta] ==> [stop, +, cancel, +, stop, +, delta, beta]
+[stop, stop, stop, start] ==> ERROR
+[delta, cancel, start] ==> [delta, beta, cancel, +, start, +]
+[delta, cancel, delta] ==> [delta, beta, cancel, +, delta, beta]
+[start, delta, stop, delta] ==> [start, +, delta, starting, stop, +, delta, finished]
+[start, stop, delta] ==> [start, +, stop, +, delta, starting]
+[delta, delta, stop] ==> [delta, beta, delta, beta, stop, +]
+[start, cancel, start, stop, cancel, start] ==> [start, +, cancel, +, start, +, stop, +, cancel, +, start, +]
+[stop, delta, cancel, delta] ==> [stop, +, delta, beta, cancel, +, delta, beta]
+[stop, stop, delta] ==> [stop, +, stop, +, delta, beta]
+[cancel, cancel, cancel] ==> [cancel, +, cancel, +, cancel, +]
+[stop, delta, start] ==> ERROR
+[cancel, cancel, start] ==> [cancel, +, cancel, +, start, +]
+[stop, stop] ==> [stop, +, stop, +]
+[start, stop, delta, stop] ==> [start, +, stop, +, delta, starting, stop, +]
+[cancel, stop, cancel] ==> [cancel, +, stop, +, cancel, +]
+[stop, stop, cancel, delta] ==> [stop, +, stop, +, cancel, +, delta, beta]
+[stop, stop, cancel, start] ==> ERROR
+[start, cancel, start] ==> [start, +, cancel, +, start, +]
+[stop, cancel, delta, delta] ==> [stop, +, cancel, +, delta, beta, delta, beta]
+[stop] ==> [stop, +]
+[start, cancel, start, cancel, start] ==> [start, +, cancel, +, start, +, cancel, +, start, +]
+[cancel, stop, stop] ==> [cancel, +, stop, +, stop, +]
+[stop, stop, stop] ==> [stop, +, stop, +, stop, +]
+[start, stop, delta, cancel] ==> [start, +, stop, +, delta, starting, cancel, +]
+[start, cancel, start, cancel] ==> [start, +, cancel, +, start, +, cancel, +]
+[start, delta, delta, stop] ==> ERROR
+[stop, cancel, cancel, stop] ==> [stop, +, cancel, +, cancel, +, stop, +]
+[start, cancel, start, start] ==> ERROR
+[start, delta, stop, stop] ==> [start, +, delta, starting, stop, +, stop, +]
+[start, cancel, start, stop, cancel] ==> [start, +, cancel, +, start, +, stop, +, cancel, +]
+[start, stop, cancel, cancel] ==> [start, +, stop, +, cancel, +, cancel, +]
+[start, delta, cancel, cancel, start] ==> [start, +, delta, starting, cancel, +, cancel, +, start, +]
+[stop, stop, cancel, stop] ==> [stop, +, stop, +, cancel, +, stop, +]
+[stop, cancel, delta] ==> [stop, +, cancel, +, delta, beta]
+[start, stop] ==> [start, +, stop, +]
+[delta, start] ==> [delta, beta, start, +]
+[stop, delta, stop, delta] ==> [stop, +, delta, beta, stop, +, delta, beta]
+[delta, delta, delta] ==> [delta, beta, delta, beta, delta, beta]
+[start, cancel, delta, cancel, start] ==> [start, +, cancel, +, delta, beta, cancel, +, start, +]
+[stop, cancel, delta, cancel] ==> [stop, +, cancel, +, delta, beta, cancel, +]
+[stop, stop, cancel, cancel] ==> [stop, +, stop, +, cancel, +, cancel, +]
+[stop, delta, stop, start] ==> ERROR
+[delta, delta] ==> [delta, beta, delta, beta]
+[start, cancel, start, delta, start] ==> ERROR
+[stop, stop, stop, delta] ==> [stop, +, stop, +, stop, +, delta, beta]
+[start, stop, cancel, stop] ==> ERROR
+[cancel, start, stop] ==> [cancel, +, start, +, stop, +]
+[cancel, delta, start] ==> [cancel, +, delta, beta, start, +]
+[cancel, delta, cancel] ==> [cancel, +, delta, beta, cancel, +]
+[stop, cancel] ==> [stop, +, cancel, +]
+[start, cancel, stop] ==> ERROR
+[start, cancel, start, stop, start] ==> ERROR
+[start, delta, stop] ==> [start, +, delta, starting, stop, +]
+[cancel, start, start] ==> ERROR
+[cancel] ==> [cancel, +]
+[start, delta, cancel, start] ==> [start, +, delta, starting, cancel, +, start, +]
+[cancel, start] ==> [cancel, +, start, +]
+[stop, stop, delta, delta] ==> [stop, +, stop, +, delta, beta, delta, beta]
+[cancel, cancel, delta] ==> [cancel, +, cancel, +, delta, beta]
+[start, cancel, cancel] ==> [start, +, cancel, +, cancel, +]
+[delta, cancel] ==> [delta, beta, cancel, +]
+[delta, stop] ==> [delta, beta, stop, +]
+[cancel, stop, start] ==> ERROR
+[start, cancel, start, cancel, cancel] ==> [start, +, cancel, +, start, +, cancel, +, cancel, +]
+[stop, cancel, start] ==> ERROR
+[start, delta, delta] ==> [start, +, delta, starting, delta, finished]
+[start, cancel, delta, delta] ==> [start, +, cancel, +, delta, beta, delta, beta]
+[start, start] ==> ERROR
+[stop, delta, delta, cancel] ==> [stop, +, delta, beta, delta, beta, cancel, +]
+[start, delta, cancel, delta] ==> [start, +, delta, starting, cancel, +, delta, beta]
+[start, stop, stop] ==> [start, +, stop, +, stop, +]
+[stop, stop, cancel] ==> [stop, +, stop, +, cancel, +]
+[start, delta, delta, cancel, start] ==> [start, +, delta, starting, delta, finished, cancel, +, start, +]
+[start, cancel, cancel, cancel] ==> [start, +, cancel, +, cancel, +, cancel, +]
+[start, cancel, start, stop, stop] ==> [start, +, cancel, +, start, +, stop, +, stop, +]
+[cancel, delta, delta] ==> [cancel, +, delta, beta, delta, beta]
+[delta, stop, stop] ==> [delta, beta, stop, +, stop, +]
+[cancel, stop, delta] ==> [cancel, +, stop, +, delta, beta]
+[start, cancel, cancel, delta] ==> [start, +, cancel, +, cancel, +, delta, beta]
+[stop, stop, start] ==> ERROR
+[start, cancel, start, stop] ==> [start, +, cancel, +, start, +, stop, +]
+[stop, delta] ==> [stop, +, delta, beta]
+[delta, start, stop] ==> [delta, beta, start, +, stop, +]
+[stop, delta, stop, stop] ==> [stop, +, delta, beta, stop, +, stop, +]
+[start, cancel, cancel, start] ==> [start, +, cancel, +, cancel, +, start, +]
+[stop, cancel, stop] ==> [stop, +, cancel, +, stop, +]
+[stop, cancel, stop, start] ==> ERROR
+[start, cancel, delta] ==> [start, +, cancel, +, delta, beta]
+[stop, cancel, delta, start] ==> ERROR
+[start, delta, cancel, stop] ==> ERROR
+[start, cancel, cancel, stop] ==> ERROR
+[start, cancel, start, stop, delta] ==> [start, +, cancel, +, start, +, stop, +, delta, beta]
+[start, delta, start] ==> ERROR
+[delta, cancel, stop] ==> [delta, beta, cancel, +, stop, +]
+[start, cancel, delta, cancel] ==> [start, +, cancel, +, delta, beta, cancel, +]
+[start, delta, stop, cancel] ==> [start, +, delta, starting, stop, +, cancel, +]
+[start, cancel, delta, stop] ==> ERROR
+[start, cancel, cancel, start, start] ==> ERROR
+[stop, delta, delta] ==> [stop, +, delta, beta, delta, beta]
+[stop, delta, cancel] ==> [stop, +, delta, beta, cancel, +]
+[stop, stop, stop, cancel] ==> [stop, +, stop, +, stop, +, cancel, +]
+[start, cancel, start, cancel, cancel, start] ==> [start, +, cancel, +, start, +, cancel, +, cancel, +, start, +]
+[stop, cancel, cancel, start] ==> ERROR
+[start, delta, delta, start, delta] ==> [start, +, delta, starting, delta, finished, start, +, delta, starting]
+[stop, cancel, cancel] ==> [stop, +, cancel, +, cancel, +]
+[start] ==> [start, +]
+[cancel, start, delta] ==> [cancel, +, start, +, delta, starting]
+[start, delta, stop, cancel, start] ==> [start, +, delta, starting, stop, +, cancel, +, start, +]
+[start, cancel, delta, cancel, cancel] ==> [start, +, cancel, +, delta, beta, cancel, +, cancel, +]
+[start, delta, stop, start] ==> ERROR
+[start, cancel, cancel, start, cancel] ==> [start, +, cancel, +, cancel, +, start, +, cancel, +]
+[stop, cancel, cancel, delta] ==> [stop, +, cancel, +, cancel, +, delta, beta]
+[start, cancel] ==> [start, +, cancel, +]
+[start, stop, cancel] ==> [start, +, stop, +, cancel, +]
+[delta, cancel, cancel] ==> [delta, beta, cancel, +, cancel, +]
+[cancel, start, cancel] ==> [cancel, +, start, +, cancel, +]
+[start, cancel, cancel, cancel, start] ==> [start, +, cancel, +, cancel, +, cancel, +, start, +]
+[stop, stop, stop, stop] ==> [stop, +, stop, +, stop, +, stop, +]
+[start, stop, start] ==> ERROR
+[start, stop, delta, start] ==> ERROR
+[start, delta, cancel, start, delta] ==> [start, +, delta, starting, cancel, +, start, +, delta, starting]
+[start, cancel, cancel, cancel, delta] ==> [start, +, cancel, +, cancel, +, cancel, +, delta, beta]
+[start, cancel, delta, start, cancel, start] ==> [start, +, cancel, +, delta, beta, start, +, cancel, +, start, +]
+[start, cancel, start, delta, delta] ==> [start, +, cancel, +, start, +, delta, beta, delta, beta]
+[delta, stop, cancel] ==> [delta, beta, stop, +, cancel, +]
+[cancel, cancel] ==> [cancel, +, cancel, +]
+[start, stop, cancel, delta] ==> [start, +, stop, +, cancel, +, delta, beta]
+[start, delta, delta, delta] ==> [start, +, delta, starting, delta, finished, delta, beta]
+[start, stop, cancel, start] ==> [start, +, stop, +, cancel, +, start, +]
+[start, delta, cancel] ==> [start, +, delta, starting, cancel, +]
+[start, stop, stop, stop] ==> [start, +, stop, +, stop, +, stop, +]
+[delta, start, cancel] ==> [delta, beta, start, +, cancel, +]
+[start, delta, delta, start] ==> [start, +, delta, starting, delta, finished, start, +]
+[delta, delta, cancel] ==> [delta, beta, delta, beta, cancel, +]
+[stop, cancel, delta, stop] ==> [stop, +, cancel, +, delta, beta, stop, +]
+[stop, cancel, stop, delta] ==> [stop, +, cancel, +, stop, +, delta, beta]
+[start, cancel, delta, start, delta] ==> [start, +, cancel, +, delta, beta, start, +, delta, starting]
+[delta, cancel, start] ==> [delta, beta, cancel, +, start, +]
+[delta, cancel, delta] ==> [delta, beta, cancel, +, delta, beta]
+[start, stop, delta] ==> [start, +, stop, +, delta, starting]
+[delta, delta, stop] ==> [delta, beta, delta, beta, stop, +]
+[start, cancel, start, stop, cancel, start] ==> [start, +, cancel, +, start, +, stop, +, cancel, +, start, +]
+[stop, stop] ==> [stop, +, stop, +]
+[start, stop, delta, stop] ==> [start, +, stop, +, delta, starting, stop, +]
+[cancel, stop, cancel] ==> [cancel, +, stop, +, cancel, +]
+[start, cancel, start] ==> [start, +, cancel, +, start, +]
+[stop, cancel, delta, delta] ==> [stop, +, cancel, +, delta, beta, delta, beta]
+[stop] ==> [stop, +]
+[start, cancel, start, cancel, start, delta] ==> [start, +, cancel, +, start, +, cancel, +, start, +, delta, beta]
+[start, cancel, start, cancel, start] ==> [start, +, cancel, +, start, +, cancel, +, start, +]
+[cancel, stop, stop] ==> [cancel, +, stop, +, stop, +]
+[stop, stop, stop] ==> [stop, +, stop, +, stop, +]
+[start, stop, delta, cancel] ==> [start, +, stop, +, delta, starting, cancel, +]
+[start, cancel, start, cancel] ==> [start, +, cancel, +, start, +, cancel, +]
+[start, cancel, start, start] ==> ERROR
+[start, cancel, cancel, delta, start] ==> [start, +, cancel, +, cancel, +, delta, beta, start, +]
+[stop, cancel, delta] ==> [stop, +, cancel, +, delta, beta]
+[stop, cancel, delta, cancel] ==> [stop, +, cancel, +, delta, beta, cancel, +]
+[stop, delta, stop, start] ==> ERROR
+[start, cancel, cancel, cancel, cancel] ==> [start, +, cancel, +, cancel, +, cancel, +, cancel, +]
+[start, cancel, start, delta, start] ==> ERROR
+[stop, stop, stop, delta] ==> [stop, +, stop, +, stop, +, delta, beta]
+[start, stop, cancel, stop] ==> ERROR
+[cancel, delta, start] ==> [cancel, +, delta, beta, start, +]
+[stop, cancel] ==> [stop, +, cancel, +]
+[start, delta, stop] ==> [start, +, delta, starting, stop, +]
+[cancel, start, start] ==> ERROR
+[cancel] ==> [cancel, +]
+[start, delta, cancel, start] ==> [start, +, delta, starting, cancel, +, start, +]
+[cancel, cancel, delta] ==> [cancel, +, cancel, +, delta, beta]
+[start, cancel, cancel] ==> [start, +, cancel, +, cancel, +]
+[delta, cancel] ==> [delta, beta, cancel, +]
+[delta, stop] ==> [delta, beta, stop, +]
+[start, stop, stop] ==> [start, +, stop, +, stop, +]
+[stop, stop, cancel] ==> [stop, +, stop, +, cancel, +]
+[start, cancel, cancel, cancel] ==> [start, +, cancel, +, cancel, +, cancel, +]
+[start, cancel, start, stop, stop] ==> [start, +, cancel, +, start, +, stop, +, stop, +]
+[cancel, delta, delta] ==> [cancel, +, delta, beta, delta, beta]
+[cancel, stop, delta] ==> [cancel, +, stop, +, delta, beta]
+[stop, stop, start] ==> ERROR
+[start, cancel, start, stop] ==> [start, +, cancel, +, start, +, stop, +]
+[delta, start, stop] ==> [delta, beta, start, +, stop, +]
+[stop, delta, stop, stop] ==> [stop, +, delta, beta, stop, +, stop, +]
+[start, cancel, cancel, delta, cancel] ==> [start, +, cancel, +, cancel, +, delta, beta, cancel, +]
+[stop, cancel, stop] ==> [stop, +, cancel, +, stop, +]
+[start, cancel, delta] ==> [start, +, cancel, +, delta, beta]
+[start, cancel, delta, start, stop] ==> [start, +, cancel, +, delta, beta, start, +, stop, +]
+[stop, cancel, delta, start] ==> ERROR
+[start, cancel, cancel, stop] ==> ERROR
+[start, cancel, delta, cancel] ==> [start, +, cancel, +, delta, beta, cancel, +]
+[start, delta, stop, cancel] ==> [start, +, delta, starting, stop, +, cancel, +]
+[start, cancel, delta, stop] ==> ERROR
+[start, stop, stop, cancel] ==> [start, +, stop, +, stop, +, cancel, +]
+[start, cancel, cancel, delta, stop] ==> ERROR
+[start, cancel, start, delta, cancel] ==> [start, +, cancel, +, start, +, delta, beta, cancel, +]
+[cancel, cancel, stop] ==> [cancel, +, cancel, +, stop, +]
+[start, cancel, delta, delta, cancel, start] ==> [start, +, cancel, +, delta, beta, delta, beta, cancel, +, start, +]
+[cancel, stop] ==> [cancel, +, stop, +]
+[stop, stop, delta, stop] ==> [stop, +, stop, +, delta, beta, stop, +]
+[start, stop, stop, delta] ==> [start, +, stop, +, stop, +, delta, starting]
+[delta] ==> [delta, beta]
+[stop, delta, cancel, cancel] ==> [stop, +, delta, beta, cancel, +, cancel, +]
+[start, cancel, start, cancel, delta] ==> [start, +, cancel, +, start, +, cancel, +, delta, beta]
+[stop, delta, delta, stop] ==> [stop, +, delta, beta, delta, beta, stop, +]
+[start, delta, delta, cancel] ==> [start, +, delta, starting, delta, finished, cancel, +]
+[start, delta] ==> [start, +, delta, starting]
+[delta, delta, start] ==> [delta, beta, delta, beta, start, +]
+[cancel, delta] ==> [cancel, +, delta, beta]
+[start, cancel, start, delta, cancel, start] ==> [start, +, cancel, +, start, +, delta, beta, cancel, +, start, +]
+[start, delta, cancel, cancel] ==> [start, +, delta, starting, cancel, +, cancel, +]
+[delta, start, start] ==> ERROR
+[start, cancel, delta, start] ==> [start, +, cancel, +, delta, beta, start, +]
+[start, cancel, delta, delta, cancel] ==> [start, +, cancel, +, delta, beta, delta, beta, cancel, +]
+[stop, delta, cancel, start] ==> ERROR
+[start, cancel, delta, start, cancel] ==> [start, +, cancel, +, delta, beta, start, +, cancel, +]
+[stop, start] ==> ERROR
+[cancel, delta, stop] ==> [cancel, +, delta, beta, stop, +]
+[start, cancel, start, delta, stop] ==> [start, +, cancel, +, start, +, delta, beta, stop, +]
+[stop, stop, delta, cancel] ==> [stop, +, stop, +, delta, beta, cancel, +]
+[] ==> []
+[stop, delta, stop] ==> [stop, +, delta, beta, stop, +]
+[start, cancel, delta, cancel, cancel, start] ==> [start, +, cancel, +, delta, beta, cancel, +, cancel, +, start, +]
+[stop, delta, delta, start] ==> ERROR
+[stop, delta, stop, cancel] ==> [stop, +, delta, beta, stop, +, cancel, +]
+[start, cancel, cancel, start, delta] ==> [start, +, cancel, +, cancel, +, start, +, delta, beta]
+[start, cancel, start, delta] ==> [start, +, cancel, +, start, +, delta, beta]
+[stop, cancel, stop, stop] ==> [stop, +, cancel, +, stop, +, stop, +]
+[stop, cancel, cancel, cancel] ==> [stop, +, cancel, +, cancel, +, cancel, +]
+[start, cancel, cancel, delta, delta] ==> [start, +, cancel, +, cancel, +, delta, beta, delta, beta]
+[start, stop, stop, start] ==> ERROR
+[delta, stop, delta] ==> [delta, beta, stop, +, delta, beta]
+[delta, stop, start] ==> ERROR
+[start, stop, delta, delta] ==> [start, +, stop, +, delta, starting, delta, finished]
+[start, cancel, cancel, cancel, stop] ==> ERROR
+[start, cancel, start, cancel, stop] ==> ERROR
+[delta, start, delta] ==> [delta, beta, start, +, delta, starting]
+[start, cancel, delta, delta, start, delta] ==> [start, +, cancel, +, delta, beta, delta, beta, start, +, delta, starting]
+[stop, cancel, stop, cancel] ==> [stop, +, cancel, +, stop, +, cancel, +]
+[stop, delta, cancel, stop] ==> [stop, +, delta, beta, cancel, +, stop, +]
+[stop, stop, delta, start] ==> ERROR
+[stop, delta, delta, delta] ==> [stop, +, delta, beta, delta, beta, delta, beta]
+[stop, stop, stop, start] ==> ERROR
+[start, delta, stop, delta] ==> [start, +, delta, starting, stop, +, delta, finished]
+[stop, delta, cancel, delta] ==> [stop, +, delta, beta, cancel, +, delta, beta]
+[stop, stop, delta] ==> [stop, +, stop, +, delta, beta]
+[cancel, cancel, cancel] ==> [cancel, +, cancel, +, cancel, +]
+[stop, delta, start] ==> ERROR
+[cancel, cancel, start] ==> [cancel, +, cancel, +, start, +]
+[stop, stop, cancel, delta] ==> [stop, +, stop, +, cancel, +, delta, beta]
+[stop, stop, cancel, start] ==> ERROR
+[start, delta, delta, stop] ==> ERROR
+[start, cancel, delta, cancel, stop] ==> ERROR
+[start, cancel, delta, delta, start] ==> [start, +, cancel, +, delta, beta, delta, beta, start, +]
+[stop, cancel, cancel, stop] ==> [stop, +, cancel, +, cancel, +, stop, +]
+[start, delta, stop, stop] ==> [start, +, delta, starting, stop, +, stop, +]
+[start, cancel, start, stop, cancel] ==> [start, +, cancel, +, start, +, stop, +, cancel, +]
+[start, stop, cancel, cancel] ==> [start, +, stop, +, cancel, +, cancel, +]
+[start, delta, cancel, cancel, start] ==> [start, +, delta, starting, cancel, +, cancel, +, start, +]
+[stop, stop, cancel, stop] ==> [stop, +, stop, +, cancel, +, stop, +]
+[start, stop] ==> [start, +, stop, +]
+[delta, start] ==> [delta, beta, start, +]
+[start, cancel, delta, delta, stop] ==> ERROR
+[stop, delta, stop, delta] ==> [stop, +, delta, beta, stop, +, delta, beta]
+[delta, delta, delta] ==> [delta, beta, delta, beta, delta, beta]
+[start, cancel, delta, cancel, start] ==> [start, +, cancel, +, delta, beta, cancel, +, start, +]
+[stop, stop, cancel, cancel] ==> [stop, +, stop, +, cancel, +, cancel, +]
+[delta, delta] ==> [delta, beta, delta, beta]
+[cancel, start, stop] ==> [cancel, +, start, +, stop, +]
+[cancel, delta, cancel] ==> [cancel, +, delta, beta, cancel, +]
+[start, cancel, stop] ==> ERROR
+[start, cancel, start, stop, start] ==> ERROR
+[start, cancel, cancel, start, stop] ==> [start, +, cancel, +, cancel, +, start, +, stop, +]
+[cancel, start] ==> [cancel, +, start, +]
+[stop, stop, delta, delta] ==> [stop, +, stop, +, delta, beta, delta, beta]
+[cancel, stop, start] ==> ERROR
+[start, cancel, start, cancel, cancel] ==> [start, +, cancel, +, start, +, cancel, +, cancel, +]
+[stop, cancel, start] ==> ERROR
+[start, delta, delta] ==> [start, +, delta, starting, delta, finished]
+[start, cancel, delta, delta] ==> [start, +, cancel, +, delta, beta, delta, beta]
+[start, start] ==> ERROR
+[start, cancel, delta, delta, delta] ==> [start, +, cancel, +, delta, beta, delta, beta, delta, beta]
+[stop, delta, delta, cancel] ==> [stop, +, delta, beta, delta, beta, cancel, +]
+[start, delta, cancel, delta] ==> [start, +, delta, starting, cancel, +, delta, beta]
+[start, cancel, delta, start, start] ==> ERROR
+[start, delta, delta, cancel, start] ==> [start, +, delta, starting, delta, finished, cancel, +, start, +]
+[start, cancel, delta, cancel, start, delta] ==> [start, +, cancel, +, delta, beta, cancel, +, start, +, delta, starting]
+[delta, stop, stop] ==> [delta, beta, stop, +, stop, +]
+[start, cancel, cancel, delta] ==> [start, +, cancel, +, cancel, +, delta, beta]
+[stop, delta] ==> [stop, +, delta, beta]
+[start, cancel, cancel, start] ==> [start, +, cancel, +, cancel, +, start, +]
+[stop, cancel, stop, start] ==> ERROR
+[start, cancel, delta, cancel, delta] ==> [start, +, cancel, +, delta, beta, cancel, +, delta, beta]
+[start, delta, cancel, stop] ==> ERROR
+[start, cancel, start, stop, delta] ==> [start, +, cancel, +, start, +, stop, +, delta, beta]
+[start, delta, start] ==> ERROR
+[delta, cancel, stop] ==> [delta, beta, cancel, +, stop, +]

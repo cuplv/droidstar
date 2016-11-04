@@ -1,0 +1,8 @@
+- class: FileObserver
+  date: 1477192678466
+  time: 104135
+  mqueries: 743
+  rmqueries: 189
+  equeries: 2
+  emqueries: 702
+  ermqueries: 15

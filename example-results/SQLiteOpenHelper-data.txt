@@ -1,0 +1,8 @@
+- class: SQLiteOpenHelper
+  date: 1477032253396
+  time: 43205
+  mqueries: 1364
+  rmqueries: 228
+  equeries: 2
+  emqueries: 1330
+  ermqueries: 12
