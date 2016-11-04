@@ -16,14 +16,11 @@ be connected by USB and have USB debugging enabled.
 
 ## Running the experiments ##
 
-An
-[`Experiment`](app/src/main/java/edu/upenn/aradha/starling/Experiment.java)
-tests a list of `LearningPurpose`s in sequence, allowing you to fetch
-the results all at once at the end.
+An [`Experiment`][2] tests a list of `LearningPurpose`s in sequence,
+allowing you to fetch the results all at once at the end.
 
-1. Edit
-   [MainActivity.java](app/src/main/java/edu/upenn/aradha/starling/MainActivity.java),
-   adding the classes you'd like to test the the `purposes` list.
+1. Edit [`MainActivity.java`][3], adding the classes you'd like to
+   test the the `purposes` list.
 2. Build and install the app (as described above).
 3. Tap the app on the phone to run it; you should just get a white
    screen.
@@ -31,9 +28,9 @@ the results all at once at the end.
    'STARLING:Q\|TRANSDUCER:Q'`
 
 The classes you can choose from for experiments are found in the
-[lp](app/src/main/java/edu/upenn/aradha/starling/droidStar/lp) source
-code directory.  If you would like to experiment on a new class, you
-can use these as examples to write a new `LearningPurpose` for it.
+[lp][4] source code directory.  If you would like to experiment on a
+new class, you can use these as examples to write a new
+`LearningPurpose` for it (this is described in more detail below).
 
 ### Running a certain class multiple times ###
 
@@ -104,3 +101,191 @@ back three files.
   during the experiment, in order(?).  If running an experiment twice
   produces different results, comparing the log files may help explain
   why.
+
+## Writing a `LearningPurpose` instance ##
+
+The "Learning Purpose" for a class is an abstraction of that class and
+its methods that the learning algorithm uses to learn a particular
+subset of its interface.  The concept (and the funny name) is adapted
+from [*Learning I/O Automata*][1], a paper which forms much of the
+theoretical background for this tool.
+
+The learning algorithm which will synthesize the class's interface
+operates by making "membership queries".  It asks a question
+consisting of an ordered list of **input symbols**.  These inputs are
+interpreted and executed, and a trace of **ouput symbols** is
+returned.  These traces are used to build an automaton that simulates
+the interface.
+
+The Learning Purpose enumerates these symbols and defines their
+meaning (in terms of concrete method calls).  By choosing these
+symbols and meanings you can control which parts of the class's
+interface you are interested in.
+
+To write a Learning Purpose, you extend the
+[`LearningPurpose` abstract class][5].  The important methods to
+override are described here.
+
+### `public abstract String shortName()` ###
+
+This is the string that will be used to refer to the class in logs and
+the final results.  It will usually just be the name of the target
+class.  For example, in the `AsyncTaskLP` instance:
+
+    public String shortName() {
+        return "AsyncTask";
+    }
+
+This **must** be unique to this class.  If two classes have the same
+`shortName()`, they will overwrite each others' results!
+
+### `protected abstract List<String> uniqueInputSet()` ###
+
+This is an unordered set of `String` symbols representing the possible
+inputs to the class you are learning.  This method instance, combined
+with the `giveInput()` method described below, make up the interface
+that the learning algorithm will used to make queries.  Here is an
+example implementation from the `SpeechRecognizerLP` instance:
+
+    public static String START = "start";
+    public static String STOP = "stop";
+    public static String CANCEL = "cancel";
+
+    protected List<String> uniqueInputSet() {
+        List<String> inputs = new ArrayList();
+        inputs.add(START);
+        inputs.add(STOP);
+        inputs.add(CANCEL);
+
+        return inputs;
+    }
+
+(defining the static strings first is just a convenience)
+
+In the simplest case, these symbols will correspond directly to method
+calls on the target class (in this case the `startListening()`,
+`stopListening()`, and `cancel()` methods of the `SpeechRecognizer`
+class), but they can also represent a group of calls.  The actual
+meaning of the symbols is defined in the `giveInput()` implementation.
+
+For all classes, the actual input set visible to the learning
+algorithm will also include a "delta" input, which means "wait for a
+callback output".
+
+### `public abstract void giveInput(String input) throws Exception` ###
+
+This method receives inputs from the learning algorithm, and should
+do something specific for every input listed in the `uniqueInputSet()`
+(it will not receive the previously mentioned "delta" input; that is
+handled automatically).  Here's the example that corresponds to the
+input set defined for `SpeechRecognizer`:
+
+    public void giveInput(String input) {
+        logl("LP received input \"" + input + "\"...");
+        
+        if (input.equals(START)) {
+            logl("Invoking \"startListening()\"...");
+            sr.startListening(intent);
+        } else if (input.equals(STOP)) {
+            logl("Invoking \"stopListening()\"...");
+            sr.stopListening();
+        } else if (input.equals(CANCEL)) {
+            logl("Invoking \"cancel()\"...");
+            sr.cancel();
+        } else {
+            logl("Unrecognized input received, doing nothing...");
+        }
+    }
+
+(`logl(String message)` is a method of the `LearningPurpose` abstract
+class, and can be used for convenient debugging messages)
+
+### `public abstract int betaTimeout()` ###
+
+This is the amount of time that should be allowed for a callback
+output to arrive when running a "delta" input (in milliseconds).  A
+half second (`500`) is usually sufficient.  In some cases (such as the
+`SpeechRecognizer`), more time is necessary to allow for complicated
+processes such as recording audio that take a while to call back.  The
+proper amount of time can be determined by running methods in a
+trivial app setup and observing how quick their responses are.
+
+### `public abstract boolean isError(String output)` ###
+
+The output symbols for your class don't need to be defined as
+explicitly as the inputs, but it is necessary to state which should be
+interpreted as errors (if any).  Here is the implementation for
+`SpeechRecognizer`.
+
+    public static String CLIENT_ERROR = "error";
+    public static String ENV_ERROR = "environment_error";
+
+    public boolean isError(String o) {
+        if (o.equals(CLIENT_ERROR)) {
+            return true;
+        } else if (o.equals(ENV_ERROR)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+### `protected abstract void resetActions(Context cx, Callback cb)` ###
+
+These actions will be executed before a new membership query, so that
+each string of input symbols is starting from a common initial state.
+Usually, this method will destroy the existing instance of the class
+that the last query was run on and initialize a new instance for the
+next query.
+
+The `Context` passed in is that of the app's main activity, which is
+used in the constructors of many Android Framework classes.
+
+(the `Callback` is provided for legacy reasons and should not be used)
+
+Here is an example from `CountDownTimerLP`:
+
+    public class CTimer extends CountDownTimer {
+        public CTimer(long s) {
+            super(s, 1000);
+        }
+        public void onTick(long s) {
+            // respond(TICK);
+        }
+        public void onFinish() {
+            respond(FINISHED);
+        }
+    }
+
+    protected void resetActions(Context context, Callback callback) {
+        doReset();
+    }
+
+    protected void doReset() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        timer = new CTimer(1100);
+    }
+
+In this example, the `Context` was not needed.
+
+The instance being initialized is in this case an extension of the
+CountDownTimer class, with its callbacks instrumented with the
+`respond(String output)`, which is used to report output symbols for
+the trace that the learning algorithm receives.
+
+### Reporting output symbols with `respond(String output)` ###
+
+The meaning of a particular non-error output symbol `OUTPUT` is
+defined by instrumenting appropriate callbacks with calls to
+`respond(OUTPUT)`.
+
+TODO: explain `CTimer`'s callbacks from the last section and provide
+an additional example of instrumented callbacks here
+
+[1]: http://www.sws.cs.ru.nl/publications/papers/fvaan/LearningIOAs/paper.pdf "Learing I/O Automata"
+[2]: app/src/main/java/edu/upenn/aradha/starling/Experiment.java "Experiment.java"
+[3]: app/src/main/java/edu/upenn/aradha/starling/MainActivity.java "MainActivity.java"
+[4]: app/src/main/java/edu/upenn/aradha/starling/droidStar/lp "lp"
+[5]: app/src/main/java/edu/colorado/plv/droidStar/LearningPurpose.java "LearningPurpose"
