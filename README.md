@@ -123,8 +123,9 @@ symbols and meanings you can control which parts of the class's
 interface you are interested in.
 
 To write a Learning Purpose, you extend the
-[`LearningPurpose` abstract class][5].  The important methods to
-override are described here.
+[`LearningPurpose` abstract class][5].  Examples of these
+implementations are found in the [`lp` package][4].  The important
+methods to override are described here.
 
 ### `public abstract String shortName()` ###
 
@@ -245,12 +246,16 @@ used in the constructors of many Android Framework classes.
 
 Here is an example from `CountDownTimerLP`:
 
+    // OUTPUTS
+    public static String FINISHED = "finished";
+    public static String TICK = "tick";
+
     public class CTimer extends CountDownTimer {
         public CTimer(long s) {
             super(s, 1000);
         }
         public void onTick(long s) {
-            // respond(TICK);
+            respond(TICK);
         }
         public void onFinish() {
             respond(FINISHED);
@@ -279,10 +284,89 @@ the trace that the learning algorithm receives.
 
 The meaning of a particular non-error output symbol `OUTPUT` is
 defined by instrumenting appropriate callbacks with calls to
-`respond(OUTPUT)`.
+`respond(OUTPUT)`.  All classes that provide a callback interface
+also provide an interface or abstract class for you to implement or
+extend in order to use the callbacks.
 
-TODO: explain `CTimer`'s callbacks from the last section and provide
-an additional example of instrumented callbacks here
+In the above example for `CountDownTimer`, the `CountDownTimer` class
+itself is an abstract class with callback methods `onTick()` and
+`onFinish()`.  For our purposes, we just call `respond()` with the
+appropriate output symbol (string).
+
+In the following example from `SpeechRecognizerLP`, an implementation
+of `RecognitionListener` provides the callbacks and is registered with
+the `SpeechRecognizer` instance.  Calls to `respond()` are used in the
+same way, but some callbacks which we consider equivalent for the
+purposes of the interface (decisions which are tested by the learning
+process) are made to call `respond()` with the same output symbol.
+
+    //OUTPUTS
+    public static String RECORDING_STARTING = "starting";
+    public static String RECORDING_FINISHED = "finished";
+    public static String CLIENT_ERROR = "error";
+    public static String ENV_ERROR = "environment_error";
+
+    public class Listener implements RecognitionListener {
+        private Callback forOutput;
+
+        Listener(Callback c) {
+            this.forOutput = c;
+            // logl("STARTED A PURPOSE LISTENER!!!");
+        }
+
+        public void onReadyForSpeech(Bundle params) {
+            respond(RECORDING_STARTING);
+        }
+
+        public void onError(int error) {
+            switch (error) {
+            case 5: // client error
+                logl("Error: Client");
+                respond(CLIENT_ERROR);
+                break;
+            case 8: // recognizer busy
+                logl("Error: Busy");
+                respond(CLIENT_ERROR);
+                break;
+            case 3: // audio failure
+            case 9: // permissions not set right
+                respond(ENV_ERROR);
+                break;
+            case 7: // no matches
+            case 6: // speech timeout
+            case 1: // network timeout
+            case 2: // server error
+                respond(RECORDING_FINISHED);
+                break;
+            default: // don't acknowledge others
+                break;
+            }
+        }
+
+        public void onResults(Bundle results) {
+            respond(RECORDING_FINISHED);
+        }
+
+        // Callbacks we don't pay attention to...
+        public void onPartialResults(Bundle partialResults) {}
+        public void onEvent(int eventType, Bundle params) {}
+        public void onRmsChanged(float rmsdB) {}
+        public void onBufferReceived(byte[] buffer) {}
+        public void onBeginningOfSpeech() {}
+        public void onEndOfSpeech() {}
+    }
+
+An instance of this `Listener` is then registered with the instance of
+the `SpeechRecognizer` during the reset process:
+
+    public void resetActions(Context context, Callback callback) {
+        if (sr != null) sr.destroy();
+        sr = SpeechRecognizer.createSpeechRecognizer(context);
+        sr.setRecognitionListener(new Listener(callback));
+    }
+
+Note that in this example, the `Context` is necessary for initializing
+the `SpeechRecognizer` instance.
 
 [1]: http://www.sws.cs.ru.nl/publications/papers/fvaan/LearningIOAs/paper.pdf "Learing I/O Automata"
 [2]: app/src/main/java/edu/upenn/aradha/starling/Experiment.java "Experiment.java"
