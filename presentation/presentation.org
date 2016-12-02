@@ -1,0 +1,49 @@
+#+TITLE: Synthesizing Specifications in the Android Framework
+#+DATE: <2016-12-02 Fri>
+#+AUTHOR: Nicholas Lewchenko
+#+EMAIL: nile1033@colorado.edu
+#+STARTUP: beamer
+#+OPTIONS: ':nil *:t -:t ::t <:t H:2 \n:nil ^:t arch:headline
+#+OPTIONS: author:t c:nil creator:comment d:(not "LOGBOOK") date:t
+#+OPTIONS: e:t email:nil f:t inline:t num:t p:nil pri:nil stat:t
+#+OPTIONS: tags:t tasks:t tex:t timestamp:t toc:t todo:t |:t
+#+CREATOR: Emacs 25.1.1 (Org mode 8.2.10)
+#+DESCRIPTION: asdf
+#+EXCLUDE_TAGS: noexport
+#+KEYWORDS:
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: Dresden
+#+BEAMER_COLOR_THEME: beetle
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
+
+* Background
+** Framework Classes
+*** Main Premise                                                    :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+The behavior of many classes in the Android Framework can be specified
+by *Interface Automata*
+*** MediaPlayer                                                     :B_block:
+:PROPERTIES:
+:BEAMER_env: block
+:END:      
+(put a picture of the MediaPlayer automaton here)
+
+- These are not usually included with the documentation
+- Could we produce them mechanically?
+** TODO The =L*= Algorithm
+- Explain what it is and how it works (teacher + learner).
+- Talk about the variations for Mealy Machines
+** TODO Interface Automata
+- Explain difference between Mealy Machines and Interface Automata
+- Show why Android classes fit better as IAs
+* DroidStar
+** Talk about the tool
+etc
+** And so on
+you get the idea
