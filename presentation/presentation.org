@@ -1,9 +1,9 @@
 #+TITLE: Synthesizing Specifications in the Android Framework
-#+DATE: <2016-12-02 Fri>
+#+DATE: December 7, 2016
 #+AUTHOR: Nicholas Lewchenko
 #+EMAIL: nile1033@colorado.edu
 #+STARTUP: beamer
-#+OPTIONS: ':nil *:t -:t ::t <:t H:2 \n:nil ^:t arch:headline
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 #+OPTIONS: author:t c:nil creator:comment d:(not "LOGBOOK") date:t
 #+OPTIONS: e:t email:nil f:t inline:t num:t p:nil pri:nil stat:t
 #+OPTIONS: tags:t tasks:t tex:t timestamp:t toc:t todo:t |:t
@@ -21,29 +21,87 @@
 #+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
 
 * Background
-** Framework Classes
-*** Main Premise                                                    :B_block:
+** The Problem
+*** The Problem                                                :B_definition:
+:PROPERTIES:
+:BEAMER_env: definition
+:END:
+Not enough documentation
+*** Framework Classes
+**** Main Premise                                             :B_block:BMCOL:
 :PROPERTIES:
 :BEAMER_env: block
+:BEAMER_col: 0.6
 :END:
 The behavior of many classes in the Android Framework can be specified
 by *Interface Automata*
-*** MediaPlayer                                                     :B_block:
-:PROPERTIES:
-:BEAMER_env: block
-:END:      
-(put a picture of the MediaPlayer automaton here)
 
 - These are not usually included with the documentation
 - Could we produce them mechanically?
-** TODO The =L*= Algorithm
-- Explain what it is and how it works (teacher + learner).
-- Talk about the variations for Mealy Machines
-** TODO Interface Automata
-- Explain difference between Mealy Machines and Interface Automata
-- Show why Android classes fit better as IAs
+**** MediaPlayer                                            :B_example:BMCOL:
+:PROPERTIES:
+:BEAMER_env: example
+:BEAMER_col: 0.4
+:END:
+[[./img/mediaplayer_state_diagram.png]]
+** The =L*= Algorithm
+*** The =L*= Algorithm
+=L*= is a learning algorithm for regular languages
+**** Inputs
+- An alphabet *A* of symbols
+- A "teacher" that can answer certain questions about a regular
+  language *L* over *A*
+  - /Membership Queries:/ Is this word (sequence of symbols) in *L*?
+  - /Equivalence Queries:/ Does this proposed automaton correctly
+    model *L*?
+**** Outputs
+- A DFA that models *L*
+*** Automata Variations
+- The "language" of an Android Framework Class has inputs and outputs
+- Would a Mealy Machine work?
+- Variations of =L*= exist for Mealy Machines
+*** Automata Variations
+- We actually want an "Interface Automaton"
+- IAs have inputs and outputs which are not directly coupled
+**** MM                                                     :B_example:BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.3
+:BEAMER_env: example
+:END:
+[[./img/Mealy.png]]
+**** IA                                                     :B_example:BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.7
+:BEAMER_env: example
+:END:
+[[./img/ia.png]]
 * DroidStar
-** Talk about the tool
-etc
-** And so on
-you get the idea
+** A solution for Interface Automata                                :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
+- /Learning IO Automata/, Fides Aarts and Frits Vaandrager
+- MM Learner <--> Transducer <--> IA Teacher
+
+*DroidStar* acts as a transducer, using a live Android system as an IA
+Teacher, to model an MM Teacher.
+** Learning Purpose                                                 :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
+- A abstraction of the actual IO system that we intend to learn
+- Implemented in DroidStar with the =LearningPurpose= interface
+* Future Work
+** Implementation details                                           :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
+- Re-implement =LearningPurpose= interface in Scala
+- Better handling of non-determinism
+** Targeting New Problems                                           :B_frame:
+:PROPERTIES:
+:BEAMER_env: frame
+:END:
+- outputs currently useful for Documentation
+- could they be used for Verification?
+- could the "inputs" be better automated?
