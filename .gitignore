@@ -9,3 +9,6 @@
 .externalNativeBuild
 /.idea/dictionaries
 *~
+/project/project
+/project/target
+/target
