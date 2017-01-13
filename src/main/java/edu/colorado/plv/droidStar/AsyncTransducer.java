@@ -3,6 +3,8 @@ package edu.colorado.plv.droidStar;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Hashtable;
 import java.util.Queue;
 import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
@@ -29,6 +31,8 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     private int querySize;
     BlockingQueue<String> outputBuff;
 
+    private Map<List<String>,List<String>> ndcache;
+
     private static void logl(String m) {
         log("TRANSDUCER", m);
     }
@@ -40,6 +44,7 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     AsyncTransducer(Context c, LearningPurpose p) {
         this.purpose = p;
         this.mainContext = c;
+        this.ndcache = new Hashtable();
     }
 
     public List<String> inputSet() {
@@ -161,7 +166,46 @@ public class AsyncTransducer implements AsyncMealyTeacher {
 
     private void returnToCaller() {
         // Notify caller that we're finished
+
+        // Also check the query and result for non-determinism
+        checkND();
+
         new Thread(finalCallback).start();
+    }
+
+    /* check for non-determinism 
+       
+       This will replace the results list with a null value if the 
+       output is found to be non-deterministic.  The details of the
+       error are printed to the log.
+    */
+    private void checkND() {
+        List<List<String>> prefixes = getPrefixes(new ArrayList(inputTrace));
+
+        for (List<String> p : prefixes) {
+            List<String> o = ndcache.get(p);
+            if (o == null) {
+                ndcache.put(p,o);
+            } else if (! o.equals(new ArrayList(outputTrace))) {
+                logq("!!!! Non-determinism detected, terminating");
+                logq("ND Prefix: " + query2String(new ArrayDeque(p)));
+                logq("First result: " + query2String(new ArrayDeque(o)));
+                logq("Last result: " + query2String(outputTrace));
+                results = null;
+            }
+        }
+                
+    }
+
+    /* return all prefixes of a list */
+    private List<List<String>> getPrefixes(List<String> trace) {
+        List<List<String>> prefixes = new ArrayList();
+
+        for (int i=0; i < trace.size(); i++) {
+            prefixes.add(trace.subList(0, i+1));
+        }
+
+        return prefixes;
     }
 
     private void reportOutput(Queue<String> b, String o) {
