@@ -180,9 +180,10 @@ public class AsyncTransducer implements AsyncMealyTeacher {
        error are printed to the log.
     */
     private void checkND() {
-        List<List<String>> prefixes = getPrefixes(new ArrayList(inputTrace));
+        List<List<String>> ips = getPrefixes(new ArrayList(inputTrace));
+        List<List<String>> ops = getPrefixes(new ArrayList(ouputTrace));
 
-        for (List<String> p : prefixes) {
+        for (List<String> p : ips) {
             List<String> o = ndcache.get(p);
             if (o == null) {
                 ndcache.put(p,o);
