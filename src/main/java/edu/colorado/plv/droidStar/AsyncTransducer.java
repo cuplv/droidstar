@@ -173,6 +173,16 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         new Thread(finalCallback).start();
     }
 
+    private class InputOutput {
+        public List<List<String>> input;
+        public List<List<String>> output;
+
+        InputOutput() {
+            input = new ArrayList();
+            output = new ArrayList();
+        }
+    }
+
     /* check for non-determinism 
        
        This will replace the results list with a null value if the 
@@ -183,23 +193,26 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         List<List<String>> ips = getPrefixes(new ArrayList(inputTrace));
         List<List<String>> ops = getPrefixes(new ArrayList(ouputTrace));
 
-        for (List<String> p : ips) {
-            List<String> o = ndcache.get(p);
-            if (o == null) {
-                ndcache.put(p,o);
-            } else if (! o.equals(new ArrayList(outputTrace))) {
+        InputOutput pairs = getPrefixes(new ArrayList(inputTrace),
+                                        new ArrayList(ouputTrace));
+
+        for (List<String> obs : pairs) {
+            List<String> prev = ndcache.get(obs.input);
+            if (prev == null) {
+                ndcache.put(obs.input,obs.output);
+            } else if (! prev.equals(obs.output)) {
                 logq("!!!! Non-determinism detected, terminating");
-                logq("ND Prefix: " + query2String(new ArrayDeque(p)));
-                logq("First result: " + query2String(new ArrayDeque(o)));
-                logq("Last result: " + query2String(outputTrace));
+                logq("ND Prefix: " + query2String(new ArrayDeque(obs.input)));
+                logq("First result: " + query2String(new ArrayDeque(obs.output)));
+                logq("Last result: " + query2String(new ArrayDeque(prev)));
                 results = null;
             }
         }
-                
     }
 
-    /* return all prefixes of a list */
-    private List<List<String>> getPrefixes(List<String> trace) {
+    /* return InputOutput pairs for all prefixes */
+    private List<List<String>> getPrefixes(List<String> is,
+                                           List<String> os) {
         List<List<String>> prefixes = new ArrayList();
 
         for (int i=0; i < trace.size(); i++) {
