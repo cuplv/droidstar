@@ -19,4 +19,11 @@ stdenv.mkDerivation {
   name = "droid-star";
   src = ./.;
   buildInputs = [ sbt-android ];
+  buildPhase = ''
+    sbt package
+  '';
+  installPhase = ''
+    mkdir $out
+    cp target/android/intermediates/classes.jar $out/droidStar.jar
+  '';
 }
