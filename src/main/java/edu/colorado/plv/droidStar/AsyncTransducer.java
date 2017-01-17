@@ -174,12 +174,12 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     }
 
     private class InputOutput {
-        public List<List<String>> input;
-        public List<List<String>> output;
+        public List<String> input;
+        public List<String> output;
 
-        InputOutput() {
-            input = new ArrayList();
-            output = new ArrayList();
+        InputOutput(List<String> is, List<String> os) {
+            input = new ArrayList(is);
+            output = new ArrayList(os);
         }
     }
 
@@ -190,33 +190,34 @@ public class AsyncTransducer implements AsyncMealyTeacher {
        error are printed to the log.
     */
     private void checkND() {
-        List<List<String>> ips = getPrefixes(new ArrayList(inputTrace));
-        List<List<String>> ops = getPrefixes(new ArrayList(ouputTrace));
+        List<InputOutput> pairs = getPrefixes(new ArrayList(inputTrace),
+                                              new ArrayList(outputTrace));
 
-        InputOutput pairs = getPrefixes(new ArrayList(inputTrace),
-                                        new ArrayList(ouputTrace));
-
-        for (List<String> obs : pairs) {
+        for (InputOutput obs : pairs) {
             List<String> prev = ndcache.get(obs.input);
             if (prev == null) {
                 ndcache.put(obs.input,obs.output);
             } else if (! prev.equals(obs.output)) {
                 logq("!!!! Non-determinism detected, terminating");
-                logq("ND Prefix: " + query2String(new ArrayDeque(obs.input)));
-                logq("First result: " + query2String(new ArrayDeque(obs.output)));
-                logq("Last result: " + query2String(new ArrayDeque(prev)));
+                logq("ND Prefix: " +
+                     query2String(new ArrayDeque(obs.input)));
+                logq("First result: " +
+                     query2String(new ArrayDeque(obs.output)));
+                logq("Last result: " +
+                     query2String(new ArrayDeque(prev)));
                 results = null;
             }
         }
     }
 
     /* return InputOutput pairs for all prefixes */
-    private List<List<String>> getPrefixes(List<String> is,
-                                           List<String> os) {
-        List<List<String>> prefixes = new ArrayList();
+    private List<InputOutput> getPrefixes(List<String> is,
+                                          List<String> os) {
+        List<InputOutput> prefixes = new ArrayList();
 
-        for (int i=0; i < trace.size(); i++) {
-            prefixes.add(trace.subList(0, i+1));
+        for (int i=0; i < is.size(); i++) {
+            prefixes.add(new InputOutput(is.subList(0, i+1),
+                                         os.subList(0, i+1)));
         }
 
         return prefixes;
