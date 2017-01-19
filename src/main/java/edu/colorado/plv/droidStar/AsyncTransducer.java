@@ -205,7 +205,11 @@ public class AsyncTransducer implements AsyncMealyTeacher {
                      query2String(new ArrayDeque(obs.output)));
                 logq("Last result: " +
                      query2String(new ArrayDeque(prev)));
-                results = null;
+
+                // Terrible hack >_<
+                logq("Sending termination message...");
+                results.clear();
+                results.add("nond-error");
             }
         }
     }
