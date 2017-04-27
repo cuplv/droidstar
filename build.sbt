@@ -14,9 +14,9 @@ javacOptions in Compile ++= "-source" :: "1.7" :: "-target" :: "1.7" :: Nil
 libraryDependencies ++= Seq(
   "com.android.support" % "appcompat-v7" % "24.0.0",
   "com.android.support.test" % "runner" % "0.5" % "androidTest",
-  "com.android.support.test.espresso" % "espresso-core" % "2.2.2" % "androidTest",
+  "com.android.support.test.espresso" % "espresso-core" % "2.2.2" % "androidTest"
 
-  "de.learnlib" % "learnlib-parent" % "0.12.0"
+  //"de.learnlib" % "learnlib-parent" % "0.12.0"
 )
 
-platformTarget := "android-23"
+platformTarget := "android-24"

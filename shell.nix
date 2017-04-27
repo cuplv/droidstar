@@ -4,8 +4,9 @@ let
 
 sbt-android = stdenv.mkDerivation {
   name = "sbt-android";
-  src = androidsdk;
+  src = ./.;
   buildInputs = [ makeWrapper ];
+  propagatedBuildInputs = [ androidsdk ];
   installPhase = ''
     mkdir -p $out/bin
     makeWrapper ${sbt}/bin/sbt $out/bin/sbt \
@@ -19,11 +20,11 @@ stdenv.mkDerivation {
   name = "droid-star";
   src = ./.;
   buildInputs = [ sbt-android ];
-  buildPhase = ''
-    sbt package
-  '';
-  installPhase = ''
-    mkdir $out
-    cp target/android/intermediates/classes.jar $out/droidStar.jar
-  '';
+  # buildPhase = ''
+  #   sbt package
+  # '';
+  # installPhase = ''
+  #   mkdir $out
+  #   cp target/android/intermediates/classes.jar $out/droidStar.jar
+  # '';
 }

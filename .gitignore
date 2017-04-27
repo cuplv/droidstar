@@ -10,5 +10,6 @@
 /.idea/dictionaries
 *~
 /project/project
+/project/build.properties
 /project/target
 /target
