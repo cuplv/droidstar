@@ -75,12 +75,44 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         seen = new ArrayList();
 
         if (purpose.validQuery(remInputs)) {
-            purpose.reset(new OutputCB());
-            timeout(purpose.postResetTimeout());
-            logl("Running query: " + query2String(remInputs));
-            step();
+            new Thread(new ResetBlocker(null,false)).start();
         } else {
             returnWithError();
+        }
+    }
+
+    private void waitAndStep() {
+        timeout(purpose.postResetTimeout());
+        logl("Running query: " + query2String(remInputs));
+        step();
+    }
+
+    private class ResetBlocker implements Runnable {
+        String flag;
+        Boolean hack;
+        public ResetBlocker(String f, Boolean b) {
+            this.flag = f;
+            this.hack = b;
+        }
+        public void run() {
+            if (this.hack) {
+                timeout(purpose.safetyTimeout());
+                Boolean flagWait = false;
+                while (! flagWait) {
+                    String got = blockTakeOutput(outputBuff);
+                    flagWait = (flag.equals(got));
+                }
+                waitAndStep();
+            } else {
+                timeout(purpose.safetyTimeout());
+                outputBuff = new LinkedBlockingQueue();
+                String flagX = purpose.reset(new OutputCB());
+                if (flagX != null) {
+                    new Thread(new ResetBlocker(flagX,true)).start();
+                } else {
+                    waitAndStep();
+                }
+            }
         }
     }
 
@@ -239,6 +271,26 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         }
     }
 
+    private String blockTakeOutput(BlockingQueue<String> buffer) {
+        String output = new String();
+        boolean done = false;
+        while (!done) {
+            try {
+                output = buffer.poll(purpose.betaTimeout(),
+                                     TimeUnit.MILLISECONDS);
+                done = true;
+            } catch (Exception e) {
+                logl("Output take interrupted? Continuing...");
+            }
+        }
+        if (output == null) output = BETA;
+        
+        logl("BlockTake returning with " + output + "...");
+        return output;
+    }
+
+
+
     // I'm really sorry about the messiness in this class.  Bugs kept
     // popping up and they needed very quick patches. -Nick
     private class OutputFetcher implements Runnable {
@@ -306,24 +358,6 @@ public class AsyncTransducer implements AsyncMealyTeacher {
                 }
             }
                 
-        }
-
-        private String blockTakeOutput(BlockingQueue<String> buffer) {
-            String output = new String();
-            boolean done = false;
-            while (!done) {
-                try {
-                    output = buffer.poll(purpose.betaTimeout(),
-                                         TimeUnit.MILLISECONDS);
-                    done = true;
-                } catch (Exception e) {
-                    logl("Output take interrupted? Continuing...");
-                }
-            }
-            if (output == null) output = BETA;
-            
-            logl("BlockTake returning with " + output + "...");
-            return output;
         }
 
         // If the outputBuff has been previously instantiated, check to

@@ -40,10 +40,11 @@ public abstract class LearningPurpose {
         }
     }
 
-    public void reset(Callback c) {
+    public String reset(Callback c) {
         this.forOutput = c;
-        resetActions(this.context, c);
+        String flag = resetActions(this.context, c);
         logl("LP has been reset.");
+        return flag;
     }
 
     public List<String> inputSet() {
@@ -55,7 +56,7 @@ public abstract class LearningPurpose {
 
     // The things that need to be done between queries to go back to
     // an initialized state
-    protected abstract void resetActions(Context context, Callback callback);
+    protected abstract String resetActions(Context context, Callback callback);
 
     // Identifies whether a given output should be considered an error
     public abstract boolean isError(String output);
