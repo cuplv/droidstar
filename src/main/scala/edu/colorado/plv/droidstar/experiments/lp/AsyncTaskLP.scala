@@ -13,7 +13,7 @@ import edu.colorado.plv.droidStar.LearningPurpose
 import edu.colorado.plv.droidStar.Static._
 
 class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
-  var task: SimpleTask = null
+  var task: AsyncTask[AnyRef,AnyRef,AnyRef] = null
   var counter: Int = 0
 
   val param = "asdf"
@@ -24,6 +24,8 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   val postexec = "on_postexec"
 
   override def betaTimeout(): Int = 500
+
+  @throws(classOf[Exception])
   override def giveInput(i: String): Unit = i match {
     case `execute` => task.execute(param)
     case `cancel` => task.cancel(false)
@@ -40,26 +42,32 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
       task.cancel(true)
       counter += 1
     }
+    task = new SimpleTask(counter)
     null
   }
   override def shortName(): String = "AsyncTask"
   override def uniqueInputSet(): java.util.List[String] =
     List(execute,cancel).asJava
 
-  class SimpleTask(localCounter: Int) extends AsyncTask[String,String,String] {
-    override def doInBackground(ss: String*): String = {
+  class SimpleTask(localCounter: Int) extends AsyncTask[AnyRef,AnyRef,AnyRef] {
+
+    /* Using `String` instead of `AnyRef` gives AbstractMethodErrors...
+     *
+     * (see https://stackoverflow.com/questions/24934022/asynctask-doinbackground-abstract-method-not-implemented-error-in-android-scal)
+     */
+    override def doInBackground(ss: AnyRef*): AnyRef = {
       try {Thread.sleep(200)}
       catch {
         case _ => logl("Sleep problem?")
       }
       param
     }
-    override def onCancelled(s: String): Unit = {
+    override def onCancelled(s: AnyRef): Unit = {
       if (localCounter == counter) {
         respond(cancelled)
       }
     }
-    override def onPostExecute(s: String): Unit = {
+    override def onPostExecute(s: AnyRef): Unit = {
       respond(postexec)
     }
   }
