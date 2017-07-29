@@ -24,7 +24,7 @@ class MainActivity extends AppCompatActivity {
     super.onStart()
     weCanWrite() match {
       case true => Experiment.experiment(
-        this, Seq(asyncTaskLP).asJava)
+        this, Seq(activityLP).asJava)
       case false => println("Seems we can't report results...")
     }
   }
