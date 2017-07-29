@@ -19,4 +19,4 @@ libraryDependencies ++= Seq(
   //"de.learnlib" % "learnlib-parent" % "0.12.0"
 )
 
-platformTarget := "android-24"
+platformTarget := "android-25"
