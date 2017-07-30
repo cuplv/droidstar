@@ -1,4 +1,4 @@
-package edu.colorado.plv.droidStar;
+package edu.colorado.plv.droidstar;
 
 import java.util.concurrent.TimeUnit;
 import java.util.List;
@@ -17,7 +17,7 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.content.Context;
 
-import static edu.colorado.plv.droidStar.Static.*;
+import static edu.colorado.plv.droidstar.Static.*;
 
 public class AsyncTransducer implements AsyncMealyTeacher {
     private LearningPurpose purpose;

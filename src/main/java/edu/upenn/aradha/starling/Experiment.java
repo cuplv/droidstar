@@ -10,16 +10,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import edu.colorado.plv.droidStar.LearningPurpose;
+import edu.colorado.plv.droidstar.LearningPurpose;
 
 import edu.upenn.aradha.starling.lstar.DistinguisherBoundedEquivalenceOracle;
 import edu.upenn.aradha.starling.lstar.EquivalenceOracle;
 import edu.upenn.aradha.starling.lstar.Input;
 import edu.upenn.aradha.starling.lstar.LStar;
 import edu.upenn.aradha.starling.lstar.MembershipOracle;
-import edu.upenn.aradha.starling.droidStar.TransducerAdapter;
+import edu.upenn.aradha.starling.droidstar.TransducerAdapter;
 
-import edu.upenn.aradha.starling.droidStar.Static;
+import edu.upenn.aradha.starling.droidstar.Static;
 
 public class Experiment implements Runnable {
     List<LearningPurpose> purposes;

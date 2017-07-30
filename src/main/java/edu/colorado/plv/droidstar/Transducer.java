@@ -1,4 +1,4 @@
-package edu.colorado.plv.droidStar;
+package edu.colorado.plv.droidstar;
 
 import java.util.List;
 import java.util.Queue;
@@ -8,7 +8,7 @@ import java.lang.Runnable;
 
 import android.content.Context;
 
-import static edu.colorado.plv.droidStar.Static.*;
+import static edu.colorado.plv.droidstar.Static.*;
 
 public class Transducer implements MealyTeacher {
     private AsyncTransducer at;

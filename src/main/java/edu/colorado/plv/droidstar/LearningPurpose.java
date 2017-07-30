@@ -1,4 +1,4 @@
-package edu.colorado.plv.droidStar;
+package edu.colorado.plv.droidstar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.ArrayDeque;
 import android.os.Handler.Callback;
 import android.content.Context;
 
-import static edu.colorado.plv.droidStar.Static.*;
+import static edu.colorado.plv.droidstar.Static.*;
 
 public abstract class LearningPurpose {
     private Context context;

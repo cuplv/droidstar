@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.lang.Thread.sleep;
 
-import edu.colorado.plv.droidStar.Static;
+import edu.colorado.plv.droidstar.Static;
 
 public abstract class Query {
     public static class Inputs {

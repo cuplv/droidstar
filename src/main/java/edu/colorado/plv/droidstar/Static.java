@@ -1,4 +1,4 @@
-package edu.colorado.plv.droidStar;
+package edu.colorado.plv.droidstar;
 
 import java.util.Queue;
 import java.util.ArrayDeque;

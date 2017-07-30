@@ -1,4 +1,4 @@
-package edu.upenn.aradha.starling.droidStar;
+package edu.upenn.aradha.starling.droidstar;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import edu.upenn.aradha.starling.lstar.Symbol;
 import edu.upenn.aradha.starling.lstar.MembershipOracle;
 
 
-import edu.colorado.plv.droidStar.Transducer;
-import edu.colorado.plv.droidStar.LearningPurpose;
+import edu.colorado.plv.droidstar.Transducer;
+import edu.colorado.plv.droidstar.LearningPurpose;
 
-import static edu.colorado.plv.droidStar.Static.*;
+import static edu.colorado.plv.droidstar.Static.*;
 
 public class TransducerAdapter extends MembershipOracle {
     private Transducer transducer;

@@ -1,11 +1,11 @@
-package edu.colorado.plv.droidStar;
+package edu.colorado.plv.droidstar;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 
 import java.lang.Runnable;
 
-import static edu.colorado.plv.droidStar.Static.*;
+import static edu.colorado.plv.droidstar.Static.*;
 
 public class TrivialLearner {
     private Queue<Queue<String>> queries;
