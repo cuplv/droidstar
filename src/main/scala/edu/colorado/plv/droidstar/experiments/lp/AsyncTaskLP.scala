@@ -58,7 +58,7 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
     override def doInBackground(ss: AnyRef*): AnyRef = {
       try {Thread.sleep(200)}
       catch {
-        case _ => logl("Sleep problem?")
+        case _ : Throwable => logl("Sleep problem?")
       }
       param
     }
