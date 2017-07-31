@@ -8,7 +8,7 @@ import scala.collection.JavaConverters._
 import android.os.Environment
 
 import edu.upenn.aradha.starling.Experiment
-import edu.colorado.plv.droidStar.LearningPurpose
+import edu.colorado.plv.droidstar.LearningPurpose
 
 class MainActivity extends AppCompatActivity {
 
@@ -24,7 +24,7 @@ class MainActivity extends AppCompatActivity {
     super.onStart()
     weCanWrite() match {
       case true => Experiment.experiment(
-        this, Seq(activityLP).asJava)
+        this, Seq(asyncTaskLP).asJava)
       case false => println("Seems we can't report results...")
     }
   }
