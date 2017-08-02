@@ -32,9 +32,9 @@ class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
   filter.addAction(complete)
   c.registerReceiver(receiver,filter)
 
-  val validUri: Request = ???
-  val invalidUri: Request = ???
-  val unavailableUri: Request = ???
+  val validUri: Request = new Request(Uri.parse("https://www.octalsrc.org/index.html"))
+  // val invalidUri: Request = new Request(Uri.parse("invalid"))
+  val unavailableUri: Request = new Request(Uri.parse("https://www.octalsrc.org/not_here.html"))
 
   val enqueueValid = "enque_valid"
   val enqueueInvalid = "enque_invalid"
@@ -42,7 +42,8 @@ class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
 
   val onCompleted = "onCompleted"
 
-  override def betaTimeout(): Int = 500
+  override def betaTimeout(): Int = 2000
+  override def safetyTimeout(): Int = 2000
 
   @throws(classOf[Exception])
   override def giveInput(i: String): Unit = i match {
