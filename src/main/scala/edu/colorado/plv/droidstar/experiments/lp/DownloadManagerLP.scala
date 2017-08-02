@@ -23,8 +23,8 @@ class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
     }
   }
 
-  // var dm: DownloadManager = c.getSystemService(Context.DOWNLOAD_SERVICE)
-  var dm: DownloadManager = c.getSystemService(classOf[DownloadManager])
+  var dm: DownloadManager = c.getSystemService(Context.DOWNLOAD_SERVICE).asInstanceOf[DownloadManager]
+  // var dm: DownloadManager = c.getSystemService(classOf[DownloadManager])
 
   val complete: String = DownloadManager.ACTION_DOWNLOAD_COMPLETE
 

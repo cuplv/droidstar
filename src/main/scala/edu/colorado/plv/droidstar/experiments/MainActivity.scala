@@ -17,14 +17,18 @@ class MainActivity extends AppCompatActivity {
       .getExternalStorageState()
       .equals(Environment.MEDIA_MOUNTED)
 
-  var activityLP: LearningPurpose = new lp.ActivityLP(this)
-  var asyncTaskLP: LearningPurpose = new lp.AsyncTaskLP(this)
+  // These MUST be lazy, so that they are created after the onCreate
+  // method is invoked.
+  lazy val activityLP: LearningPurpose = new lp.ActivityLP(this)
+  lazy val asyncTaskLP: LearningPurpose = new lp.AsyncTaskLP(this)
+  lazy val downloadLP: LearningPurpose = new lp.DownloadManagerLP(this)
 
-  override def onStart(): Unit = {
-    super.onStart()
+  override def onCreate(s: Bundle): Unit = {
+    super.onCreate(s)
     weCanWrite() match {
       case true => Experiment.experiment(
-        this, Seq(asyncTaskLP).asJava)
+        this, Seq(downloadLP).asJava
+      )
       case false => println("Seems we can't report results...")
     }
   }
