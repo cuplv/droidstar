@@ -11,6 +11,8 @@ import edu.colorado.plv.droidstar.Static._
 import android.app.DownloadManager
 import android.app.DownloadManager.Request
 
+import collection.mutable.Queue
+
 class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
 
   val receiver: BroadcastReceiver = new BroadcastReceiver {
@@ -39,15 +41,24 @@ class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
   val enqueueValid = "enque_valid"
   val enqueueInvalid = "enque_invalid"
   val enqueueUnavailable = "enque_unavailable"
+  val remove = "remove"
 
   val onCompleted = "onCompleted"
+
+  var ids: Queue[Long] = new Queue()
 
   override def betaTimeout(): Int = 2000
   override def safetyTimeout(): Int = 2000
 
+  override def uniqueInputSet(): java.util.List[String] =
+    List(enqueueValid, remove).asJava
+
+  override def singleInputs(): java.util.List[String] = uniqueInputSet()
+
   @throws(classOf[Exception])
   override def giveInput(i: String): Unit = i match {
-    case `enqueueValid` => dm.enqueue(validUri)
+    case `enqueueValid` => ids.enqueue(dm.enqueue(validUri))
+    case `remove` => dm.remove(ids.dequeue())
     case _ => {
       logl("Unknown command to DownloadManager")
       throw new IllegalArgumentException("Unknown command to DownloadManager")
@@ -57,12 +68,10 @@ class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
   override def isError(o: String): Boolean = false
 
   override def resetActions(c: Context, b: Callback): String = {
+    ids.clear()
     null
   }
 
   override def shortName(): String = "DownloadManager"
-
-  override def uniqueInputSet(): java.util.List[String] =
-    List(enqueueValid).asJava
 
 }
