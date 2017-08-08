@@ -22,12 +22,13 @@ class MainActivity extends AppCompatActivity {
   lazy val activityLP: LearningPurpose = new lp.ActivityLP(this)
   lazy val asyncTaskLP: LearningPurpose = new lp.AsyncTaskLP(this)
   lazy val downloadLP: LearningPurpose = new lp.DownloadManagerLP(this)
+  lazy val requestQueueLP: LearningPurpose = new lp.RequestQueueLP(this)
 
   override def onCreate(s: Bundle): Unit = {
     super.onCreate(s)
     weCanWrite() match {
       case true => Experiment.experiment(
-        this, Seq(downloadLP).asJava
+        this, Seq(requestQueueLP).asJava
       )
       case false => println("Seems we can't report results...")
     }
