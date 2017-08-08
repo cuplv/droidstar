@@ -22,5 +22,6 @@ libraryDependencies ++= Seq(
   "com.android.support.test" % "runner" % "0.5" % "androidTest",
   "com.android.support.test.espresso" % "espresso-core" % "2.2.2" % "androidTest",
 
-  "com.android.volley" % "volley" % "1.0.0"
+  "com.android.volley" % "volley" % "1.0.0",
+  "com.squareup.okhttp3" % "okhttp" % "3.8.1"
 )
