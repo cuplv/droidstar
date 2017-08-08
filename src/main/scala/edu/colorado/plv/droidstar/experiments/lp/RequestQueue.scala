@@ -22,6 +22,7 @@ class RequestQueueLP(c: Context) extends LearningPurpose(c) {
   val cancel = "cancel"
 
   val onCompleted = "onCompleted"
+  val on404 = "on404"
   val onError = "onError"
 
   val tagV = "TagV"
@@ -43,9 +44,14 @@ class RequestQueueLP(c: Context) extends LearningPurpose(c) {
         }
       },
       new Response.ErrorListener() {
-        override def onErrorResponse(error: VolleyError): Unit = {
-          respond(onError)
-        }
+        override def onErrorResponse(error: VolleyError): Unit =
+          error.networkResponse match {
+            case null => respond(onError)
+            case nr => nr.statusCode match {
+              case 404 => respond(on404)
+              case _ => respond(onError)
+            }
+          }
       }
     )
     request.setTag(tag)
@@ -53,22 +59,8 @@ class RequestQueueLP(c: Context) extends LearningPurpose(c) {
   }
 
   override def giveInput(i: String): Unit = i match {
-    case `enqueueValid` => {
-      var request: StringRequest = new StringRequest(Request.Method.GET, urlV,
-        new Response.Listener[String]() {
-          override def onResponse(response: String): Unit = {
-            respond(onCompleted)
-          }
-        },
-        new Response.ErrorListener() {
-          override def onErrorResponse(error: VolleyError): Unit = {
-            respond(onError)
-          }
-        }
-      )
-      request.setTag(tagV)
-      rq.add(request)
-    }
+    case `enqueueValid` => rq.add(mkRequest(urlV,tagV))
+    case `enqueueUnavailable` => rq.add(mkRequest(urlU,tagV))
     case `cancel` => rq.cancelAll(tagV)
     case _ => {
       logl("Unknown command to DownloadManager")
