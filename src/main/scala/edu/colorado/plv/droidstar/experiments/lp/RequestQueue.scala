@@ -7,6 +7,7 @@ import android.net.Uri
 import scala.collection.JavaConverters._
 import edu.colorado.plv.droidstar.LearningPurpose
 import edu.colorado.plv.droidstar.Static._
+import edu.colorado.plv.droidstar.contrib._
 
 import com.android.volley.{RequestQueue, Request, Response, VolleyError}
 import com.android.volley.toolbox.{Volley, StringRequest}
@@ -75,6 +76,6 @@ class RequestQueueLP(c: Context) extends LearningPurpose(c) {
   }
   override def betaTimeout(): Int = 2000
   override def safetyTimeout(): Int = 2000
-  override def singleInputs(): java.util.List[String] =
-    List(enqueueValid, enqueueUnavailable).asJava
+  override def validQuery(q: java.util.Queue[String]): Boolean =
+    onlyOneOf(Seq(enqueueValid, enqueueUnavailable))(q)
 }

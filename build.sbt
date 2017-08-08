@@ -15,6 +15,12 @@ minSdkVersion := "23"
 
 javacOptions in Compile ++= "-source" :: "1.7" :: "-target" :: "1.7" :: Nil
 
+proguardOptions ++= Seq(
+  "-dontwarn okio.**",
+  "-dontwarn okhttp3.**",
+  "-dontwarn com.android.volley.**"
+)
+
 resolvers += Resolver.jcenterRepo
 
 libraryDependencies ++= Seq(
