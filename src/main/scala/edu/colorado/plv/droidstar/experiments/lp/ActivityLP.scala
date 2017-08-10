@@ -8,8 +8,6 @@ import android.app.Activity
 
 import scala.collection.JavaConverters._
 
-import edu.colorado.plv.droidstar.LearningPurpose
-
 /* This experiment is fundamentally broken; see interior comment */
 class ActivityLP(c: Context) extends LearningPurpose(c) {
   import edu.colorado.plv.droidstar.Static._

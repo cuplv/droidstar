@@ -9,9 +9,6 @@ import android.os.AsyncTask
 
 import scala.collection.JavaConverters._
 
-import edu.colorado.plv.droidstar.LearningPurpose
-import edu.colorado.plv.droidstar.Static._
-
 class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   var task: AsyncTask[AnyRef,AnyRef,AnyRef] = null
   var counter: Int = 0

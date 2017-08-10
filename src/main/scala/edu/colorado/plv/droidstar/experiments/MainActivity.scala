@@ -1,4 +1,5 @@
-package edu.colorado.plv.droidstar.experiments
+package edu.colorado.plv.droidstar
+package experiments
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -6,9 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import scala.collection.JavaConverters._
 
 import android.os.Environment
-
-import edu.upenn.aradha.starling.Experiment
-import edu.colorado.plv.droidstar.LearningPurpose
 
 class MainActivity extends AppCompatActivity {
 
@@ -27,7 +25,7 @@ class MainActivity extends AppCompatActivity {
   override def onCreate(s: Bundle): Unit = {
     super.onCreate(s)
     weCanWrite() match {
-      case true => Experiment.experiment(
+      case true => experiment(
         this, Seq(requestQueueLP).asJava
       )
       case false => println("Seems we can't report results...")
