@@ -1,0 +1,3 @@
+[submodule "droidstar"]
+	path = droidstar
+	url = git@github.com:cuplv/droidstar
