@@ -29,7 +29,8 @@ libraryDependencies ++= Seq(
   "com.android.support.test.espresso" % "espresso-core" % "2.2.2" % "androidTest",
 
   "com.android.volley" % "volley" % "1.0.0",
-  "com.squareup.okhttp3" % "okhttp" % "3.8.1"
+  "com.squareup.okhttp3" % "okhttp" % "3.8.1",
+  "com.nostra13.universalimageloader" % "universal-image-loader" % "1.9.5"
 )
 
 lazy val root = (project in file(".")).dependsOn(droidstar)
