@@ -31,3 +31,7 @@ libraryDependencies ++= Seq(
   "com.android.volley" % "volley" % "1.0.0",
   "com.squareup.okhttp3" % "okhttp" % "3.8.1"
 )
+
+lazy val root = (project in file(".")).dependsOn(droidstar)
+
+lazy val droidstar = project in file("droidstar")
