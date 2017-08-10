@@ -54,45 +54,45 @@ public abstract class LearningPurpose {
         return is;
     }
 
-    // The things that need to be done between queries to go back to
-    // an initialized state
+    /** The things that need to be done between queries to go back to
+     * an initialized state */
     protected abstract String resetActions(Context context, Callback callback);
 
-    // Identifies whether a given output should be considered an error
+    /** Identifies whether a given output should be considered an error */
     public abstract boolean isError(String output);
 
-    // Drop an output if you've already seen it in the course of one
-    // delta-block.  Maybe useful if a class is buggy and repeats
-    // callbacks (looking at you, SpeechRecognizer...)
+    /** Drop an output if you've already seen it in the course of one
+     * delta-block.  Maybe useful if a class is buggy and repeats
+     * callbacks (looking at you, SpeechRecognizer...) */
     public boolean dropDoubleOutput() {
         return false;
     }
 
-    // The name that will be used for this class in logs and printed
-    // result files
+    /** The name that will be used for this class in logs and printed
+     * result files */
     public abstract String shortName();
 
-    // Use this in case there are issues with noise in the queue after
-    // a block of inputs.  The transducer will wait this amount of
-    // time (in milliseconds) after each block is finished.
+    /** Use this in case there are issues with noise in the queue
+     * after a block of inputs.  The transducer will wait this amount
+     * of time (in milliseconds) after each block is finished. */
     public int safetyTimeout() {
         return 0;
     }
 
-    // Inputs that should only be allowed once, in order to reduce
-    // more complicated classes to regular languages that we can learn
-    // correctly
-    //
-    // It's empty by default
+    /** Inputs that should only be allowed once, in order to reduce
+     * more complicated classes to regular languages that we can learn
+     * correctly
+     *
+     * It's empty by default. */
     public List<String> singleInputs() {
         return new ArrayList();
     }
 
-    // All queries are checked against this before being run.  They
-    // will be counted as errors if this fails.
-    //
-    // The default implementation asserts that any input in the
-    // singleInputs() for this class only appears once.
+    /** All queries are checked against this before being run.  They
+     * will be counted as errors if this fails.
+     * 
+     * The default implementation asserts that any input in the
+     * singleInputs() for this class only appears once. */
     public boolean validQuery(Queue<String> q) {
         Queue<String> query = new ArrayDeque(q);
         List<String> seen = new ArrayList();
@@ -108,27 +108,28 @@ public abstract class LearningPurpose {
         return true;
     }
 
-    // Use this to wait after resetting, in case resetting causes some
-    // callback to be reported which you need to be flushed before
-    // starting the query.
+    /** Use this to wait after resetting, in case resetting causes
+    * some callback to be reported which you need to be flushed
+    * before starting the query. */
     public int postResetTimeout() {
         return 0;
     }
 
-    // Time reasonable to wait before reporting "beta" for a delta
-    // input (in milliseconds)
+    /** Time reasonable to wait before reporting "beta" for a delta
+     * input (in milliseconds) */
     public abstract int betaTimeout();
 
-    // Variable to the equivalence query; must be longer for some
-    // classes that need many inputs before they produce any outputs
-    // (motivated by the FileObserverLP)
+    /** Variable to the equivalence query; must be longer for some
+     * classes that need many inputs before they produce any outputs
+     * (motivated by the FileObserverLP) */
     public int eqLength() {
         return 2;
     }
 
-    // Input set for this class, not including delta
+    /** Input set for this class, not including delta */
     protected abstract List<String> uniqueInputSet();
 
-    // Take an input symbol and interact with the object accordingly
+    /** Take an input symbol and interact with the object
+     * accordingly */
     public abstract void giveInput(String input) throws Exception;
 }
