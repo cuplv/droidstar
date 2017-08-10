@@ -32,13 +32,16 @@ class OkHttpCallLP(c: Context) extends LearningPurpose(c) {
     case `onError` => true
     case _ => false
   }
-  override def betaTimeout(): Int = 2000
+  override def betaTimeout(): Int = 1000
   override def safetyTimeout(): Int = 2000
-  // override def validQuery(q: java.util.Queue[String]): Boolean =
-  //   onlyOneOf(Seq(enqueueValid, enqueueUnavailable))(q)
+  override def validQuery(q: java.util.Queue[String]): Boolean =
+    onlyOneOf(Seq(buildValid, buildUnavailable))(q)
 
   override def resetActions(c: Context, b: Callback): String = {
-    call = null
+    call match {
+      case null => ()
+      case _ => { call.cancel(); call = null }
+    }
     null
   }
 
