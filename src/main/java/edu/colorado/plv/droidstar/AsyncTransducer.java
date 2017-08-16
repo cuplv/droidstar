@@ -143,6 +143,7 @@ public class AsyncTransducer implements AsyncMealyTeacher {
             fetchOutputs(numDeltas);
         } catch (Exception e) {
             logq("Input Exception; error");
+            log("FAIL",e.toString());
             returnWithError();
         }
     }
