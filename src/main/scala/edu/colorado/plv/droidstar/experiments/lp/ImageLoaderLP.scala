@@ -6,11 +6,34 @@ import android.content.{Context, BroadcastReceiver, IntentFilter, Intent}
 import android.net.Uri
 import scala.collection.JavaConverters._
 
-import com.nostra13.universalimageloader.core.ImageLoader
+import android.graphics.Bitmap
+import android.view.View
+
+import com.nostra13.universalimageloader.core._
+import assist.FailReason
+import listener.ImageLoadingListener
+
+import Static._
 
 class ImageLoaderLP(c: Context) extends LearningPurpose(c) {
 
+  var il: ImageLoader = ImageLoader.getInstance()
+  il.init(ImageLoaderConfiguration.createDefault(c))
+  var gen: Int = 0
+
+  // inputs
+  val loadGood: String = "loadGood"
+  val loadBad: String = "loadBad"
+  val cancel: String = "cancel"
+
+  // outputs
+  val onLoadStart: String = "onLoadStart"
+  val onLoadComplete: String = "onLoadComplete"
+  val onLoadCancelled: String = "onLoadCancelled"
   val onError: String = "onError"
+
+  val goodUrl: String = "http://xkcd.com/s/0b7742.png"
+  val badUrl: String = "http://www.example.com/nothere.png"
 
   override def shortName(): String = "ImageLoaderLP"
   override def isError(o: String): Boolean = o match {
@@ -18,13 +41,40 @@ class ImageLoaderLP(c: Context) extends LearningPurpose(c) {
     case _ => false
   }
   override def betaTimeout(): Int = 1000
-  override def safetyTimeout(): Int = 2000
-  // override def validQuery(q: java.util.Queue[String]): Boolean =
-  //   onlyOneOf(Seq(buildValid, buildUnavailable))(q)
+  // override def safetyTimeout(): Int = 2000
+  override def validQuery(q: java.util.Queue[String]): Boolean =
+    onlyOneOf(Seq(loadGood, loadBad))(q)
 
-  override def uniqueInputSet(): java.util.List[String] = ???
-  override def giveInput(input: String): Unit = ???
-  override def resetActions(c: Context, b: Callback): String = ???
+  def mkListener(g: Int): ImageLoadingListener = new ImageLoadingListener() {
+    override def onLoadingStarted(url: String, v: View) {
+      if (g == gen) respond(onLoadStart)
+    }
+    override def onLoadingComplete(url: String, v: View, i: Bitmap) {
+      if (g == gen) respond(onLoadComplete)
+    }
+    override def onLoadingCancelled(url: String, v: View) {
+      if (g == gen) respond(onLoadCancelled)
+    }
+    override def onLoadingFailed(url: String, v: View, f: FailReason) {
+      log("FAIL",f.getType().toString())
+      log("FAIL",f.getCause().toString())
+      if (g == gen) respond(onError)
+    }
+  }
+
+  override def uniqueInputSet(): java.util.List[String] = Seq(
+    loadGood,
+    loadBad,
+    cancel
+  ).asJava
+  override def giveInput(input: String): Unit = input match {
+    case `loadGood` => il.loadImage(loadGood, mkListener(gen))
+    case `loadBad` => il.loadImage(loadBad, mkListener(gen))
+    case `cancel` => il.stop()
+  }
+  override def resetActions(c: Context, b: Callback): String = {
+    if (il.isInited()) il.stop()
+    gen += 1
+    null
+  }
 }
-
-
