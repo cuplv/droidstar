@@ -32,8 +32,8 @@ class ImageLoaderLP(c: Context) extends LearningPurpose(c) {
   val onLoadCancelled: String = "onLoadCancelled"
   val onError: String = "onError"
 
-  val goodUrl: String = "http://xkcd.com/s/0b7742.png"
-  val badUrl: String = "http://www.example.com/nothere.png"
+  val goodUrl: String = "https://xkcd.com/s/0b7742.png"
+  val badUrl: String = "https://www.example.com/nothere.png"
 
   override def shortName(): String = "ImageLoaderLP"
   override def isError(o: String): Boolean = o match {
@@ -41,7 +41,6 @@ class ImageLoaderLP(c: Context) extends LearningPurpose(c) {
     case _ => false
   }
   override def betaTimeout(): Int = 1000
-  // override def safetyTimeout(): Int = 2000
   override def validQuery(q: java.util.Queue[String]): Boolean =
     onlyOneOf(Seq(loadGood, loadBad))(q)
 
@@ -68,8 +67,8 @@ class ImageLoaderLP(c: Context) extends LearningPurpose(c) {
     cancel
   ).asJava
   override def giveInput(input: String): Unit = input match {
-    case `loadGood` => il.loadImage(loadGood, mkListener(gen))
-    case `loadBad` => il.loadImage(loadBad, mkListener(gen))
+    case `loadGood` => il.loadImage(goodUrl, mkListener(gen))
+    case `loadBad` => il.loadImage(badUrl, mkListener(gen))
     case `cancel` => il.stop()
   }
   override def resetActions(c: Context, b: Callback): String = {
