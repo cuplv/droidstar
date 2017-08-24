@@ -32,7 +32,7 @@ class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
   filter.addAction(complete)
   c.registerReceiver(receiver,filter)
 
-  val validUri: Request = new Request(Uri.parse("https://www.octalsrc.org/index.html"))
+  val validUri: Request = new Request(Uri.parse("https://upload.wikimedia.org/wikipedia/commons/7/77/Bourg-la-Reine_%28la_mairie%29.JPG"))
   // val invalidUri: Request = new Request(Uri.parse("invalid"))
   val unavailableUri: Request = new Request(Uri.parse("https://www.octalsrc.org/not_here.html"))
 
@@ -49,13 +49,21 @@ class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
   override def safetyTimeout(): Int = 2000
 
   override def uniqueInputSet(): java.util.List[String] =
-    List(enqueueValid, remove).asJava
+    List(enqueueValid, enqueueUnavailable, remove).asJava
 
-  override def singleInputs(): java.util.List[String] = uniqueInputSet()
+  override def validQuery(q: java.util.Queue[String]): Boolean =
+    onlyOneOf(Seq(enqueueValid, enqueueUnavailable))(q)
 
   @throws(classOf[Exception])
   override def giveInput(i: String): Unit = i match {
-    case `enqueueValid` => ids.enqueue(dm.enqueue(validUri))
+    case `enqueueValid` => {
+      val id = dm.enqueue(validUri)
+      ids.enqueue(id)
+    }
+    case `enqueueUnavailable` => {
+      val id = dm.enqueue(unavailableUri)
+      ids.enqueue(id)
+    }
     case `remove` => dm.remove(ids.dequeue())
     case _ => {
       logl("Unknown command to DownloadManager")

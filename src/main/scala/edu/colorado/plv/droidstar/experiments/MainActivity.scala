@@ -23,12 +23,14 @@ class MainActivity extends AppCompatActivity {
   lazy val requestQueueLP: LearningPurpose = new lp.RequestQueueLP(this)
   lazy val okhttpcallLP: LearningPurpose = new lp.OkHttpCallLP(this)
   lazy val imageloaderLP: LearningPurpose = new lp.ImageLoaderLP(this)
+  lazy val velocitytrackerLP: LearningPurpose = new lp.VelocityTrackerLP(this)
+  lazy val mediaplayerLP: LearningPurpose = new lp.ExtraMediaPlayerLP(this)
 
   override def onCreate(s: Bundle): Unit = {
     super.onCreate(s)
     weCanWrite() match {
       case true => experiment(
-        this, Seq(imageloaderLP).asJava
+        this, Seq(mediaplayerLP).asJava
       )
       case false => println("Seems we can't report results...")
     }
