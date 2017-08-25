@@ -66,33 +66,36 @@ public class AsyncTransducer implements AsyncMealyTeacher {
 
     public List<List<Integer>> setupAltKeys(Queue<String> inputs) {
         List<String> inputl = new ArrayList(inputs);
-        List<Integer> lsy = new ArrayList();
-        for(int i = 0; i < inputl.size(); i++) {
-            String input = inputl.get(i);
-            if (!input.equals(DELTA)) lsy.add(0);
+        List<String> realInputL = new ArrayList();
+        for(String i : inputl) {
+            if (!i.equals(DELTA)) realInputL.add(i);
         }
+
+        List<Integer> lsy = new ArrayList();
+        for(String i : realInputL) {lsy.add(0);}
+
         List<List<Integer>> ls = new ArrayList();
         ls.add(lsy);
 
-        for(int i = 0; i < inputl.size(); i++) {
-            String input = inputl.get(i);
-            if (!input.equals(DELTA)) {
-              Integer num = purpose.inputAlts().get(input);
-              if (num == null) num = 0;
-  
-              for (int n = 1; n <= num; n++) {
-                  List<List<Integer>> morels = new ArrayList();
-                  for(List<Integer> l : ls) {
-                      List<Integer> upl = new ArrayList(l);
-                      upl.set(i,n);
-                      morels.add(upl);
-                  }
-                  ls.addAll(morels);
-              }
+        for(int i = 0; i < realInputL.size(); i++) {
+            String input = realInputL.get(i);
+            Integer num = purpose.inputAlts().get(input);
+            if (num == null) num = 0;
+
+            for (int n = 1; n <= num; n++) {
+                List<List<Integer>> morels = new ArrayList();
+                for(List<Integer> l : ls) {
+                    List<Integer> upl = new ArrayList(l);
+                    upl.set(i,n);
+                    morels.add(upl);
+                }
+                ls.addAll(morels);
             }
         }
 
-        // finished
+        // for (List<Integer> l : ls) {
+        //     logq(l.toString());
+        // }
         return ls;
     }
 
@@ -107,12 +110,14 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         finalCallback = c;
         results = rs;
         altKeys = setupAltKeys(is);
+        altResults = new ArrayDeque();
         fullInputs = new ArrayDeque(is);
 
         altMembershipQuery();
     }
 
     public void altMembershipQuery() {
+        results.clear();
         currentAlts = new ArrayDeque(altKeys.remove(0));
         remInputs = new ArrayDeque(fullInputs);
         inputTrace = new ArrayDeque();
@@ -245,13 +250,14 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     private void returnToCaller() {
         // Notify caller that we're finished
 
-        // Also check the query and result for non-determinism
-        checkND();
 
         // Also check that we are finished with alternatives
         if (!nextAlt()) {
             // Also check that alternatives were all the same
             checkAlts(results);
+
+            // Also check the query and result for non-determinism
+            checkND();
             
             new Thread(finalCallback).start();
         }
@@ -259,8 +265,7 @@ public class AsyncTransducer implements AsyncMealyTeacher {
 
     private boolean nextAlt() {
         if (!altKeys.isEmpty()) {
-            currentAlts = new ArrayDeque(altKeys.remove(0));
-            altResults.add(results);
+            altResults.add(new ArrayDeque(results));
             altMembershipQuery();
             return true;
         } else {
@@ -269,9 +274,23 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     }
 
     private void checkAlts(Queue<String> rs) {
+        List<String> rsl = new ArrayList(rs);
         for (Queue<String> ra : altResults) {
-            if (!rs.equals(ra)) {
-                // crash with useful message
+            List<String> ral = new ArrayList(ra);
+            if (!(rsl.equals(ral))) {
+                logq("!!!! Input alternatives with different behavior");
+                logq("Input: " +
+                     query2String(fullInputs));
+                logq("Alternative outputs: ");
+                logq("  " + query2String(rs));
+                for (Queue<String> raa : altResults) {
+                    logq("  " + query2String(raa));
+                }
+
+                // Terrible hack >_<
+                logq("Sending termination message...");
+                results.clear();
+                results.add("nond-error");
             }
         }
     }
