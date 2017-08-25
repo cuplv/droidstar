@@ -95,7 +95,7 @@ public class MediaPlayerLP extends LearningPurpose {
         this.mp.setDataSource(demoURL);
     }
 
-    public void giveInput(String input) throws Exception {
+    public void giveInput(String input, int altKey) throws Exception {
         if (input.equals(SET_DATA_SOURCE)) {
             setDataSourceC();
         } else if (input.equals(PREPARE)) {

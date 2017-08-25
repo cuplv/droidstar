@@ -56,7 +56,7 @@ class RequestQueueLP(c: Context) extends LearningPurpose(c) {
     request
   }
 
-  override def giveInput(i: String): Unit = i match {
+  override def giveInput(i: String, altKey: Int): Unit = i match {
     case `enqueueValid` => rq.add(mkRequest(urlV,tagV))
     case `enqueueUnavailable` => rq.add(mkRequest(urlU,tagV))
     case `cancel` => rq.cancelAll(tagV)

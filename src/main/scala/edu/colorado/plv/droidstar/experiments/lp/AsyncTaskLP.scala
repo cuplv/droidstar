@@ -23,13 +23,19 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   override def betaTimeout(): Int = 500
 
   @throws(classOf[Exception])
-  override def giveInput(i: String): Unit = i match {
+  override def giveInput(i: String, altKey: Int): Unit = i match {
     case `execute` => task.execute(param)
     case `cancel` => task.cancel(false)
     case _ => {
       logl("Unknown command to AsyncTask")
       throw new IllegalArgumentException("Unknown command to AsyncTask")
     }
+  }
+
+  override def inputAlts(): java.util.Map[String,java.lang.Integer] = {
+    val m = super.inputAlts()
+    m.put(execute,1)
+    m
   }
 
   override def isError(o: String): Boolean = false

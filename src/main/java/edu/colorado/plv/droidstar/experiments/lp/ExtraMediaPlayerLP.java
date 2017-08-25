@@ -28,11 +28,11 @@ public class ExtraMediaPlayerLP extends MediaPlayerLP {
         super.mp.setDataSource(BAD_URL);
     }
 
-    public void giveInput(String input) throws Exception {
+    public void giveInput(String input, int altKey) throws Exception {
         if (input.equals(BAD_DATA_SOURCE)) {
             badDataSourceC();
         } else {
-            super.giveInput(input);
+            super.giveInput(input, altKey);
         }
     }
 }

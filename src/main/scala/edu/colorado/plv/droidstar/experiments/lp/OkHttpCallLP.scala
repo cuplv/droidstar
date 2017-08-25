@@ -69,7 +69,7 @@ class OkHttpCallLP(c: Context) extends LearningPurpose(c) {
     }
   }
 
-  override def giveInput(i: String): Unit = i match {
+  override def giveInput(i: String, altKey: Int): Unit = i match {
     case `buildValid` => { call = client.newCall(mkRequest(urlV)) }
     case `buildUnavailable` => { call = client.newCall(mkRequest(urlU)) }
     case `enqueue` => call.enqueue(mkCallback)

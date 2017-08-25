@@ -42,7 +42,7 @@ public class VelocityTrackerLP extends LearningPurpose {
     public VelocityTrackerLP(Context c) {
         super(c);
     }
-    public void giveInput(String input) throws Exception {
+    public void giveInput(String input, int altKey) throws Exception {
         if (input.equals("move")) {
             MotionEvent e = MotionEvent.obtain(SystemClock.uptimeMillis(),
                                                SystemClock.uptimeMillis(),

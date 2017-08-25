@@ -55,7 +55,7 @@ class DownloadManagerLP(c: Context) extends LearningPurpose(c) {
     onlyOneOf(Seq(enqueueValid, enqueueUnavailable))(q)
 
   @throws(classOf[Exception])
-  override def giveInput(i: String): Unit = i match {
+  override def giveInput(i: String, altKey: Int): Unit = i match {
     case `enqueueValid` => {
       val id = dm.enqueue(validUri)
       ids.enqueue(id)

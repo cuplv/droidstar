@@ -30,7 +30,7 @@ class MainActivity extends AppCompatActivity {
     super.onCreate(s)
     weCanWrite() match {
       case true => experiment(
-        this, Seq(mediaplayerLP).asJava
+        this, Seq(asyncTaskLP).asJava
       )
       case false => println("Seems we can't report results...")
     }

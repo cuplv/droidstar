@@ -103,7 +103,7 @@ public class BluetoothAdapterLP extends LearningPurpose {
     public String shortName() {return "BluetoothAdapter";}
 
     @Override
-    public void giveInput(String input) throws Exception {
+    public void giveInput(String input, int altKey) throws Exception {
         if (input.equals(ENABLE)) {
             if (! ba.enable()) {
                 throw new Exception(ENABLE + " [failed]");

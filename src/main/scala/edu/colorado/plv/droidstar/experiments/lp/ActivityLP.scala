@@ -15,7 +15,7 @@ class ActivityLP(c: Context) extends LearningPurpose(c) {
   var activity: Activity = null
 
   override def betaTimeout(): Int = 500
-  override def giveInput(i: String): Unit = i match {
+  override def giveInput(i: String, altKey: Int): Unit = i match {
     case "finish" => activity.finish()
     case _ => ()
   }

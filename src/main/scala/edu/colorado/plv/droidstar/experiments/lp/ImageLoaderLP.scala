@@ -66,7 +66,7 @@ class ImageLoaderLP(c: Context) extends LearningPurpose(c) {
     loadBad,
     cancel
   ).asJava
-  override def giveInput(input: String): Unit = input match {
+  override def giveInput(input: String, altKey: Int): Unit = input match {
     case `loadGood` => il.loadImage(goodUrl, mkListener(gen))
     case `loadBad` => il.loadImage(badUrl, mkListener(gen))
     case `cancel` => il.stop()
