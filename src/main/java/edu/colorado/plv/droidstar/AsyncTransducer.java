@@ -23,6 +23,7 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     private LearningPurpose purpose;
     private Runnable finalCallback;
     private Queue<String> results;
+    private Queue<String> fullInputs;
     private Queue<String> remInputs;
     private Queue<String> inputTrace;
     private Queue<String> outputTrace;
@@ -32,6 +33,10 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     BlockingQueue<String> outputBuff;
 
     private Map<List<String>,List<String>> ndcache;
+
+    private List<List<Integer>> altKeys;
+    private Queue<Queue<String>> altResults;
+    private Queue<Integer> currentAlts;
 
     private static void logl(String m) {
         log("TRANSDUCER", m);
@@ -59,6 +64,38 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         logq("IN  >>> " + query2String(is));
     }
 
+    public List<List<Integer>> setupAltKeys(Queue<String> inputs) {
+        List<String> inputl = new ArrayList(inputs);
+        List<Integer> lsy = new ArrayList();
+        for(int i = 0; i < inputl.size(); i++) {
+            String input = inputl.get(i);
+            if (!input.equals(DELTA)) lsy.add(0);
+        }
+        List<List<Integer>> ls = new ArrayList();
+        ls.add(lsy);
+
+        for(int i = 0; i < inputl.size(); i++) {
+            String input = inputl.get(i);
+            if (!input.equals(DELTA)) {
+              Integer num = purpose.inputAlts().get(input);
+              if (num == null) num = 0;
+  
+              for (int n = 1; n <= num; n++) {
+                  List<List<Integer>> morels = new ArrayList();
+                  for(List<Integer> l : ls) {
+                      List<Integer> upl = new ArrayList(l);
+                      upl.set(i,n);
+                      morels.add(upl);
+                  }
+                  ls.addAll(morels);
+              }
+            }
+        }
+
+        // finished
+        return ls;
+    }
+
     private void timeout(int t) {
         if (t > 0) {
             try {Thread.sleep(t);}
@@ -69,7 +106,15 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     public void mainMembershipQuery(Runnable c, Queue<String> rs, Queue<String> is) {
         finalCallback = c;
         results = rs;
-        remInputs = new ArrayDeque(is);
+        altKeys = setupAltKeys(is);
+        fullInputs = new ArrayDeque(is);
+
+        altMembershipQuery();
+    }
+
+    public void altMembershipQuery() {
+        currentAlts = new ArrayDeque(altKeys.remove(0));
+        remInputs = new ArrayDeque(fullInputs);
         inputTrace = new ArrayDeque();
         outputTrace = new ArrayDeque();
         seen = new ArrayList();
@@ -154,7 +199,7 @@ public class AsyncTransducer implements AsyncMealyTeacher {
             outputTrace.add(ACCEPTED);
         }
         for (String input : inputs) {
-            purpose.giveInput(input);
+            purpose.giveInput(input,currentAlts.remove());
         }
     }
 
@@ -203,7 +248,32 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         // Also check the query and result for non-determinism
         checkND();
 
-        new Thread(finalCallback).start();
+        // Also check that we are finished with alternatives
+        if (!nextAlt()) {
+            // Also check that alternatives were all the same
+            checkAlts(results);
+            
+            new Thread(finalCallback).start();
+        }
+    }
+
+    private boolean nextAlt() {
+        if (!altKeys.isEmpty()) {
+            currentAlts = new ArrayDeque(altKeys.remove(0));
+            altResults.add(results);
+            altMembershipQuery();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void checkAlts(Queue<String> rs) {
+        for (Queue<String> ra : altResults) {
+            if (!rs.equals(ra)) {
+                // crash with useful message
+            }
+        }
     }
 
     private class InputOutput {

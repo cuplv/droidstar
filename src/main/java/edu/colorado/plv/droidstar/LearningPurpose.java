@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.ArrayDeque;
+import java.util.Map;
+import java.util.Hashtable;
 
 import android.os.Handler.Callback;
 import android.content.Context;
@@ -53,6 +55,9 @@ public abstract class LearningPurpose {
 
         return is;
     }
+
+    /** Number of alternatives for each input; defaults to 1 each */
+    public Map<String,Integer> inputAlts() { return new Hashtable(); }
 
     /** The things that need to be done between queries to go back to
      * an initialized state */
@@ -131,5 +136,5 @@ public abstract class LearningPurpose {
 
     /** Take an input symbol and interact with the object
      * accordingly */
-    public abstract void giveInput(String input) throws Exception;
+    public abstract void giveInput(String input, int altKey) throws Exception;
 }
