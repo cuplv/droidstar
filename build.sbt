@@ -9,7 +9,7 @@ version := "0.4-SNAPSHOT"
 instrumentTestRunner :=
   "android.support.test.runner.AndroidJUnitRunner"
 
-platformTarget := "android-25"
+platformTarget := "android-26"
 
 minSdkVersion := "23"
 
