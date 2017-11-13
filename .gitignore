@@ -3,4 +3,4 @@ project/project
 bin/
 local.properties
 proguard-sbt.txt
-/results/
+/results

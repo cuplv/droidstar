@@ -10,30 +10,29 @@ import android.os.Environment
 
 class MainActivity extends AppCompatActivity {
 
-  def weCanWrite(): Boolean =
-    Environment
-      .getExternalStorageState()
-      .equals(Environment.MEDIA_MOUNTED)
+  // List learning purposes you wish to learn here.  They will be
+  // performed in the order they are listed.
+  lazy val experiments = Seq[LearningPurpose](
+    new lp.AsyncTaskLP(this),
+    new lp.DownloadManagerLP(this),
+    new lp.RequestQueueLP(this),
+    new lp.OkHttpCallLP(this),
+    new lp.ImageLoaderLP(this),
+    new lp.VelocityTrackerLP(this),
+    new lp.ExtraMediaPlayerLP(this)
+  )
 
-  // These MUST be lazy, so that they are created after the onCreate
-  // method is invoked.
-  lazy val activityLP: LearningPurpose = new lp.ActivityLP(this)
-  lazy val asyncTaskLP: LearningPurpose = new lp.AsyncTaskLP(this)
-  lazy val downloadLP: LearningPurpose = new lp.DownloadManagerLP(this)
-  lazy val requestQueueLP: LearningPurpose = new lp.RequestQueueLP(this)
-  lazy val okhttpcallLP: LearningPurpose = new lp.OkHttpCallLP(this)
-  lazy val imageloaderLP: LearningPurpose = new lp.ImageLoaderLP(this)
-  lazy val velocitytrackerLP: LearningPurpose = new lp.VelocityTrackerLP(this)
-  lazy val mediaplayerLP: LearningPurpose = new lp.ExtraMediaPlayerLP(this)
 
   override def onCreate(s: Bundle): Unit = {
     super.onCreate(s)
     weCanWrite() match {
-      case true => experiment(
-        this, Seq(asyncTaskLP).asJava
-      )
+      case true => experiment(this, experiments.asJava)
       case false => println("Seems we can't report results...")
     }
   }
 
+  def weCanWrite(): Boolean =
+    Environment
+      .getExternalStorageState()
+      .equals(Environment.MEDIA_MOUNTED)
 }
