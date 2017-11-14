@@ -21,8 +21,7 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   val postexec = "on_postexec"
   val preexec = "on_preexec"
 
-  override def betaTimeout(): Int = 1000
-  override def safetyTimeout(): Int = 1000
+  override def betaTimeout(): Int = 500
 
   @throws(classOf[Exception])
   override def giveInput(i: String, altKey: Int): Unit = i match {
@@ -53,8 +52,6 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   override def shortName(): String = "AsyncTask"
   override def uniqueInputSet(): java.util.List[String] =
     List(execute,cancel).asJava
-
-  override def eqLength(): Int = 3
 
   class SimpleTask(localCounter: Int) extends AsyncTask[AnyRef,AnyRef,AnyRef] {
 
