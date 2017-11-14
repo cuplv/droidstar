@@ -181,8 +181,10 @@ public class AsyncTransducer implements AsyncMealyTeacher {
     private void nextInput() {
 
         // First flush outputs produced by the previous block of
-        // inputs
-        outputBuff = new LinkedBlockingQueue();
+        // inputs, if the appropriate option is set
+        if (this.purpose.discardExtraCallbacks()) {
+            outputBuff = new LinkedBlockingQueue();
+        }
 
         // Now gather the inputs and deltas in this block
         Queue<String> inputs = popInputs();

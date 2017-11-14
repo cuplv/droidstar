@@ -84,6 +84,14 @@ public abstract class LearningPurpose {
         return 0;
     }
 
+    /** Choose whether to flush the callback queue before each new
+     * input.  This behavior is deprecated as it will cause the
+     * experiment to miss events, which is usually unsound and
+     * unintended, so you should probably leave it as false. */
+    public boolean discardExtraCallbacks() {
+        return false;
+    }
+
     /** Inputs that should only be allowed once, in order to reduce
      * more complicated classes to regular languages that we can learn
      * correctly
