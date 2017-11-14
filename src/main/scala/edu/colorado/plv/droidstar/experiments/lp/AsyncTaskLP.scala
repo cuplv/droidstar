@@ -20,6 +20,7 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   val cancelled = "on_cancelled"
   val postexec = "on_postexec"
   val preexec = "on_preexec"
+  val isCancelled = "is_cancelled"
 
   override def betaTimeout(): Int = 500
 
@@ -27,6 +28,16 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   override def giveInput(i: String, altKey: Int): Unit = i match {
     case `execute` => task.execute(param)
     case `cancel` => task.cancel(false)
+
+    // We analyze the result of isCancelled by considering a `true` to
+    // indicate a successful invocation and `false` an unsuccessful
+    // one.
+    case `isCancelled` => {
+      if (!task.isCancelled()) {
+        throw new IllegalStateException("Not in cancelled state")
+      }
+    }
+
     case _ => {
       logl("Unknown command to AsyncTask")
       throw new IllegalArgumentException("Unknown command to AsyncTask")
@@ -51,7 +62,7 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   }
   override def shortName(): String = "AsyncTask"
   override def uniqueInputSet(): java.util.List[String] =
-    List(execute,cancel).asJava
+    List(execute,cancel,isCancelled).asJava
 
   class SimpleTask(localCounter: Int) extends AsyncTask[AnyRef,AnyRef,AnyRef] {
 
