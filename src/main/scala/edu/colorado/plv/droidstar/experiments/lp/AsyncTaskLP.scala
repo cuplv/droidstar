@@ -19,6 +19,7 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
   val cancel = "cancel"
   val cancelled = "on_cancelled"
   val postexec = "on_postexec"
+  val preexec = "on_preexec"
 
   override def betaTimeout(): Int = 500
 
@@ -72,6 +73,9 @@ class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
     }
     override def onPostExecute(s: AnyRef): Unit = {
       respond(postexec)
+    }
+    override def onPreExecute(): Unit = {
+      respond(preexec)
     }
   }
 
