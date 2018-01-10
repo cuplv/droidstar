@@ -4,7 +4,7 @@ enablePlugins(AndroidApp)
 android.useSupportVectors
 
 versionCode := Some(1)
-version := "0.4-SNAPSHOT"
+version := "0.1-SNAPSHOT"
 
 instrumentTestRunner :=
   "android.support.test.runner.AndroidJUnitRunner"
