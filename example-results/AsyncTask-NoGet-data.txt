@@ -1,8 +1,0 @@
-- class: AsyncTask-NoGet
-  date: 1477032204589
-  time: 48800
-  mqueries: 372
-  rmqueries: 94
-  equeries: 1
-  emqueries: 356
-  ermqueries: 0

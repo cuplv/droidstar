@@ -1,8 +1,0 @@
-- class: CountDownTimer
-  date: 1477031937532
-  time: 133721
-  mqueries: 232
-  rmqueries: 61
-  equeries: 1
-  emqueries: 224
-  ermqueries: 0

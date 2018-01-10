@@ -1,8 +1,0 @@
-- class: SpellCheckerSession
-  date: 1477032071302
-  time: 133260
-  mqueries: 798
-  rmqueries: 213
-  equeries: 2
-  emqueries: 748
-  ermqueries: 16
