@@ -4,7 +4,7 @@ enablePlugins(AndroidJar)
 useSupportVectors
 
 versionCode := Some(1)
-version := "0.1-SNAPSHOT"
+version := "0.1"
 
 instrumentTestRunner :=
   "android.support.test.runner.AndroidJUnitRunner"
@@ -15,8 +15,6 @@ libraryDependencies ++= Seq(
   "com.android.support" % "appcompat-v7" % "24.0.0",
   "com.android.support.test" % "runner" % "0.5" % "androidTest",
   "com.android.support.test.espresso" % "espresso-core" % "2.2.2" % "androidTest"
-
-  //"de.learnlib" % "learnlib-parent" % "0.12.0"
 )
 
 platformTarget := "android-26"
