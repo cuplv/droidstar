@@ -4,7 +4,7 @@ enablePlugins(AndroidJar)
 useSupportVectors
 
 versionCode := Some(1)
-version := "0.1"
+version := "0.1.2"
 
 instrumentTestRunner :=
   "android.support.test.runner.AndroidJUnitRunner"
