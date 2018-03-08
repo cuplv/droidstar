@@ -4,7 +4,7 @@ enablePlugins(AndroidApp)
 android.useSupportVectors
 
 versionCode := Some(1)
-version := "0.1-SNAPSHOT"
+version := "0.1.2"
 
 instrumentTestRunner :=
   "android.support.test.runner.AndroidJUnitRunner"
@@ -33,6 +33,6 @@ libraryDependencies ++= Seq(
   "com.nostra13.universalimageloader" % "universal-image-loader" % "1.9.5"
 )
 
-lazy val root = (project in file(".")).dependsOn(droidstar)
+lazy val root = (project in file(".")).dependsOn(droidstarLib)
 
-lazy val droidstar = project in file("droidstar")
+lazy val droidstarLib = project in file("droidstar-lib")

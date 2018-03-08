@@ -13,9 +13,7 @@ class MainActivity extends AppCompatActivity {
   // List learning purposes you wish to learn here.  They will be
   // performed in the order they are listed.
   lazy val experiments = Seq[LearningPurpose](
-    new lp.AsyncTaskLP(this),
-    new lp.DownloadManagerLP(this),
-    new lp.VelocityTrackerLP(this)
+    new lp.AsyncTaskLP(this)
       // etc.
   )
 

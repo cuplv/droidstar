@@ -1,43 +1,47 @@
-# DroidStar Experiments #
+# DroidStar #
 
-## Running the experiments ##
+DroidStar is an Android testing tool that generates behavioral
+specifications for Android classes that explain how and when their
+callbacks occur.  This repository holds a growing set of specification
+experiments which can be quickly run with a template Android
+application.
 
-An experiment tests a list of `LearningPurpose` instances in sequence,
-allowing you to fetch the results all at once at the end.
+## Quick start ##
 
-1. Edit [`MainActivity.scala`][1], adding the classes you'd like to
-   test the the `purposes` list.
-2. Build and install the app (as described above).
-3. Tap the app on the phone to run it; you should just get a white
-   screen.
-4. Observe the experiments' progress by running `adb logcat | grep
-   'STARLING:Q\|TRANSDUCER:Q'`
+*Your environment will need: `git`, `dot` (a graph-drawing program
+provided by the [graphviz](https://www.graphviz.org/) package), and
+[`sbt`](https://www.scala-sbt.org/).*
 
-The classes you can choose from for experiments are found in the
-[lp][2] source code directory (and also in the older [java lp][3]
-directory; they inmplement the same interface).  If you would like to
-experiment on a new class, you can use these as examples to write a
-new `LearningPurpose` for it.  Also, check out the [`LearningPurpose`
-class source file][4] for some useful comments on what its various
-methods and options are for.
+Clone the repository and connect your Android device.
 
+    $ git clone --recurse-submodules https://github.com/cuplv/droidstar
+    $ sudo adb start-server
+    $ # Connect your device
+    $ adb devices
 
-## Fetching the results ##
+If `adb devices` lists your device, you are good to go.
 
-Make sure you have `adb` and `dot` (graphviz) in your path, and that
-your phone is connected by USB and in USB Debugging Mode.  From the
-root directory of the application:
+Now give a command to `sbt` that will build, install, and run the
+experiment application on your device.
 
-1. `./fetch-results --fetch DEVICE_ID` (the device id is only
-   necessary if you have multiple devices connected to your computer)
-2. This should pull the data and diagrams from the phone and put them
-   in the `./results` directory, building the diagram pngs with `dot`.
-3. Note that this will overwrite results with the same name in the
-   `results` directory!  Move or rename results you wish to keep
-   before running the experiment again.
+    $ sbt android:run
 
-**Also note: The phone deletes all previously stored results each time
-the app is run!  Make sure to fetch results between runs.**
+You should see an empty screen appear on your device.  You can now
+follow the experiment's progress.
+
+    $ ./track-progress
+
+By default, the experiment application will learn the callback
+typestate for the `AsyncTask` class.  The tracker will tell you when
+the experiment is complete (and your device will return to its
+home-screen).  At this point you can fetch the results from the
+device.
+
+    $ ./fetch-results
+    
+This command will place the results of the experiment in a `./results`
+directory.  This directory will contain a `.png` image that shows the
+learned callback typestate for the `AsyncTask` class.
 
 
 ## Interpreting the results ##
@@ -68,8 +72,25 @@ back three files.
   produces different results, comparing the log files may help explain
   why.
 
+## Running other experiments ##
 
-[1]: https://github.com/cuplv/droidstar-experiments/tree/master/src/main/scala/edu/colorado/plv/droidstar/experiments/MainActivity.scala
-[2]: https://github.com/cuplv/droidstar-experiments/tree/master/src/main/scala/edu/colorado/plv/droidstar/experiments/lp
-[3]: https://github.com/cuplv/droidstar-experiments/tree/master/src/main/java/edu/colorado/plv/droidstar/experiments/lp
-[4]: https://github.com/cuplv/droidstar/tree/master/src/main/java/edu/colorado/plv/droidstar/LearningPurpose.java
+An experiment tests a list of `LearningPurpose` instances in sequence,
+allowing you to fetch the results all at once at the end.  You can
+edit [`MainActivity.scala`][1], to change the classes you'd like to
+test by adding them to the `purposes` list.
+
+The classes you can choose from for experiments are found in the
+[lp][2] source code directory (and also in the older [java lp][3]
+directory; they inmplement the same interface).  If you would like to
+experiment on a new class, you can use these as examples to write a
+new `LearningPurpose` for it.  Also, check out the [`LearningPurpose`
+class source file][4] for some useful comments on what its various
+methods and options are for.
+
+
+
+[1]: https://github.com/cuplv/droidstar/tree/master/src/main/scala/edu/colorado/plv/droidstar/experiments/MainActivity.scala
+[2]: https://github.com/cuplv/droidstar/tree/master/src/main/scala/edu/colorado/plv/droidstar/experiments/lp
+[3]: https://github.com/cuplv/droidstar/tree/master/src/main/java/edu/colorado/plv/droidstar/experiments/lp
+[4]: https://github.com/cuplv/droidstar-lib/tree/master/src/main/java/edu/colorado/plv/droidstar/LearningPurpose.java
+[5]: https://github.com/cuplv/droidstar-lib

@@ -1,3 +1,3 @@
-[submodule "droidstar"]
-	path = droidstar
-	url = git@github.com:cuplv/droidstar
+[submodule "droidstar-lib"]
+	path = droidstar-lib
+	url = https://github.com/cuplv/droidstar-lib
