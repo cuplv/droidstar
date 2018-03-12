@@ -1,8 +1,10 @@
 # DroidStar #
 
-DroidStar is an Android testing tool that generates behavioral
-specifications for Android classes that explain how and when their
-callbacks occur.  This repository holds a growing set of specification
+DroidStar is an active learning tool that synthesizes behavioral specifications for event-driven framework classes that explain how and when their callbacks occur.
+
+In Android application programming, understanding when the application is allowed to call into the framework (callins) and when the framework may call back to the application (callbacks) is difficult. The object-oriented type of Android classes does not provide this extra “callback typestate” information, and writing manual tests for different sequences of asynchronous events is extremely tedious. DroidStar automatically chooses and executes test sequences in order to fully explore the possible states of an Android class, using the results of these tests to generate a specification of all possible callin and callback orderings. This specification can be used by the developer of the class to check that their implementation does what they intend, and it can serve as documentation to quickly explain to users of the class how to interact with it.
+
+This repository holds a growing set of specification
 experiments which can be quickly run with a template Android
 application.
 
