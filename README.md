@@ -90,6 +90,151 @@ class source file][4] for some useful comments on what its various
 methods and options are for.
 
 
+## Writing an experiment ##
+
+In order to perform your own experiment on a class you are interested
+in, you must write an instance of the `LearningPurpose` abstract class
+that tells `droidstar` how to explore its behavior.
+
+We begin with the boiler-plate imports.  Add any imports you need
+here, and replace the name `AsyncTaskLP` with whatever your experiment
+should be called.  By convention, we name them `$(class under
+study)LP`.
+
+    package edu.colorado.plv.droidstar
+    package experiments.lp
+    
+    import android.content.Context
+    import android.os.Handler.Callback
+    import android.os.AsyncTask
+    import scala.collection.JavaConverters._
+    
+    class AsyncTaskLP(c: Context) extends LearningPurpose(c) {
+
+
+Now that we are defining our subclass, it is helpful to start by
+defining the various identifiers you will use up front, so that they
+are not mis-typed later.  These `String` identifiers will be
+associated with code snippets and used to mark results in the
+automaton that is produced.
+
+You will need one for each distinct input and output that you are
+studying.
+
+      // inputs
+      val execute = "exec"
+      val cancel = "cancel"
+
+      // outputs
+      val cancelled = "on_cancelled"
+      val postexec = "on_postexec"
+      val preexec = "on_preexec"
+
+    
+Next, establish the mutable state that `droidstar` will work on.  If
+the focus of your experiment is a singe class, such as the `AsyncTask`
+class in this example, this state will simply be an object of the
+class.  The object does not need to be instantiated at this point; it
+will be re-initialized at the beginning of each testing round.
+
+      var task: AsyncTask[AnyRef,AnyRef,AnyRef] = null
+
+
+In most cases, you will need to extend the class you are studying in
+order to instrument its callbacks with reports that `droidstar` can
+see.  Here, we define a simple `AsyncTask` instance that waits a
+little while as its task and reports callback identifiers (that we
+defined in the previous step) using the `repsond()` method that
+`LearningPurpose` provides.
+
+      class SimpleTask(localCounter: Int) extends AsyncTask[AnyRef,AnyRef,AnyRef] {
+    
+        override def doInBackground(ss: AnyRef*): AnyRef = {
+          try {Thread.sleep(200)}
+          catch {
+            case _ : Throwable => logl("Sleep problem?")
+          }
+          param
+        }
+
+        override def onPostExecute(s: AnyRef): Unit = respond(postexec)
+
+        override def onPreExecute(): Unit = respond(preexec)
+      }
+
+
+We now define the steps `droistar` takes to set up a test.  Usually
+this is a code snippet that initializes the mutable state we have
+established.  Here we initialize the `task` variable we previously
+declared with an instance of `SimpleTask`, disabling and discarding
+any `task` left over from a previous test.
+
+      override def resetActions(c: Context, b: Callback): String = {
+        if (task != null) {
+          task.cancel(true)
+        }
+        task = new SimpleTask(0)
+        null
+      }
+
+
+Now define the `LearningPurpose.uniqueInputSet()`, a list of `String`
+values, as the list of your input identifiers.
+    
+      override def uniqueInputSet(): java.util.List[String] =
+        List(execute,cancel,isCancelled).asJava
+
+
+This list will be used to generate test sequences.  So that `droistar`
+can actually execute each test, you must associate each input
+identifier in the list with a code snippet that acts on the mutable
+state you have established.
+
+      @throws(classOf[Exception])
+      override def giveInput(i: String, altKey: Int): Unit = i match {
+        case `execute` => task.execute("asdf")
+        case `cancel` => task.cancel(false)
+    
+        case _ => {
+          logl("Unknown command to AsyncTask")
+          throw new IllegalArgumentException("Unknown command to AsyncTask")
+        }
+      }
+
+
+Almost finished!  All that remains is a handful of optional settings
+that you may need to adjust for your experiment to be useful.  The
+few most important ones appear here; the full list of modifiable
+settings can be found in the [`LearningPurpose` source file][4].
+
+The `betaTimeout` is an integer representing the number of
+milliseconds `droidstar` should wait to receive a callback.  This
+timeout is very important; it should be greater than the amount of
+time you think any callback you are tracking should take so that none
+are missed.
+
+      override def betaTimeout(): Int = 500
+
+
+The `isError` function takes an output identifier (as reported by a
+callback using the `respond` method) and states whether it should be
+considered an error.  This is used to make an input as "not enabled"
+even if it didn't throw a synchronous error.  Some callins report that
+they failed via callback.
+
+      override def isError(o: String): Boolean = false
+    
+We don't have any of these for `AsyncTask`.
+
+
+The last option is a name that `droistar` will use to title the
+results it produces.  It is important to make sure if you are running
+several experiments together that each of their `LearningPurpose`s has
+a different `shortName` value.
+
+      override def shortName(): String = "AsyncTask"
+    }
+
 
 [1]: https://github.com/cuplv/droidstar/tree/master/src/main/scala/edu/colorado/plv/droidstar/experiments/MainActivity.scala
 [2]: https://github.com/cuplv/droidstar/tree/master/src/main/scala/edu/colorado/plv/droidstar/experiments/lp
