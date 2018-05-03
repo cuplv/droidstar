@@ -1,1 +1,1 @@
-adb logcat -c && sbt android:run
+adb logcat -c && sbt driverApp/android:run

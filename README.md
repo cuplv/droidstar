@@ -1,8 +1,22 @@
 # DroidStar #
 
-DroidStar is an active learning tool that synthesizes behavioral specifications for event-driven framework classes that explain how and when their callbacks occur.
+DroidStar is an active learning tool that synthesizes behavioral
+specifications for event-driven framework classes that explain how and
+when their callbacks occur.
 
-In Android application programming, understanding when the application is allowed to call into the framework (callins) and when the framework may call back to the application (callbacks) is difficult. The object-oriented type of Android classes does not provide this extra “callback typestate” information, and writing manual tests for different sequences of asynchronous events is extremely tedious. DroidStar automatically chooses and executes test sequences in order to fully explore the possible states of an Android class, using the results of these tests to generate a specification of all possible callin and callback orderings. This specification can be used by the developer of the class to check that their implementation does what they intend, and it can serve as documentation to quickly explain to users of the class how to interact with it.
+In Android application programming, understanding when the application
+is allowed to call into the framework (callins) and when the framework
+may call back to the application (callbacks) is difficult. The
+object-oriented type of Android classes does not provide this extra
+“callback typestate” information, and writing manual tests for
+different sequences of asynchronous events is extremely
+tedious. DroidStar automatically chooses and executes test sequences
+in order to fully explore the possible states of an Android class,
+using the results of these tests to generate a specification of all
+possible callin and callback orderings. This specification can be used
+by the developer of the class to check that their implementation does
+what they intend, and it can serve as documentation to quickly explain
+to users of the class how to interact with it.
 
 This repository holds a growing set of specification
 experiments which can be quickly run with a template Android
@@ -16,7 +30,7 @@ provided by the [graphviz](https://www.graphviz.org/) package), and
 
 Clone the repository and connect your Android device.
 
-    $ git clone --recurse-submodules https://github.com/cuplv/droidstar
+    $ git clone https://github.com/cuplv/droidstar
     $ sudo adb start-server
     $ # Connect your device
     $ adb devices
@@ -26,7 +40,7 @@ If `adb devices` lists your device, you are good to go.
 Now give a command to `sbt` that will build, install, and run the
 experiment application on your device.
 
-    $ sbt android:run
+    $ ./run-experiments
 
 You should see an empty screen appear on your device.  You can now
 follow the experiment's progress.
@@ -236,8 +250,7 @@ a different `shortName` value.
     }
 
 
-[1]: https://github.com/cuplv/droidstar/tree/master/src/main/scala/edu/colorado/plv/droidstar/experiments/MainActivity.scala
-[2]: https://github.com/cuplv/droidstar/tree/master/src/main/scala/edu/colorado/plv/droidstar/experiments/lp
-[3]: https://github.com/cuplv/droidstar/tree/master/src/main/java/edu/colorado/plv/droidstar/experiments/lp
-[4]: https://github.com/cuplv/droidstar-lib/tree/master/src/main/java/edu/colorado/plv/droidstar/LearningPurpose.java
-[5]: https://github.com/cuplv/droidstar-lib
+[1]: driver-app/src/main/scala/edu/colorado/plv/droidstar/experiments/MainActivity.scala
+[2]: driver-app/src/main/scala/edu/colorado/plv/droidstar/experiments/lp
+[3]: driver-app/src/main/java/edu/colorado/plv/droidstar/experiments/lp
+[4]: lib/src/main/java/edu/colorado/plv/droidstar/LearningPurpose.java

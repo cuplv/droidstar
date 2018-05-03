@@ -1,6 +1,6 @@
 lazy val meta = Seq(
   name := "droidstar",
-  version := "0.1.2"
+  version := "0.1.2.1"
 )
 
 lazy val commonSettings = Seq(
