@@ -1,0 +1,11 @@
+#!/bin/sh
+
+ANDROID_SDK_HOME=$ANDROID_HOME
+
+echo '### Setting up emulator'
+
+avdmanager create avd -n test -k "system-images;android-26;google_apis;x86_64"
+
+emulator -avd test -noaudio -no-boot-anim -no-window -accel on &
+
+adb devices

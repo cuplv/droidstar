@@ -1,0 +1,11 @@
+# Set up 
+
+if [ ! -d AndroidSDK ]; do git clone https://github.com/thyrlian/AndroidSDK; done
+
+docker run -it --rm -v $(pwd)/AndroidSDK/sdk:/sdk thyrlian/android-sdk bash -c 'cp -a $ANDROID_HOME/. /sdk'
+
+AndroidSDK/sdk/tools/bin/sdkmanager --update
+AndroidSDK/sdk/tools/bin/sdkmanager                             \
+  "build-tools;26.0.1"                               \
+  "platforms;android-26"                             \
+  "system-images;android-26;google_apis;x86_64"
