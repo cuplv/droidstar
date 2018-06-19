@@ -25,7 +25,7 @@ lazy val driverApp = Project(id = "driverApp", base = file("driver-app"))
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.android.volley" % "volley" % "1.0.0",
+      // "com.android.volley" % "volley" % "1.1.0",
       "com.squareup.okhttp3" % "okhttp" % "3.8.1",
       "com.nostra13.universalimageloader" % "universal-image-loader" % "1.9.5"
     ),
