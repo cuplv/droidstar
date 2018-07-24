@@ -27,6 +27,7 @@ public class Experiment implements Runnable {
 
     public static void experiment(Activity c, List<LearningPurpose> ps) {
         new Thread(new Experiment(c,ps)).start();
+        // c.runOnUiThread(new Experiment(c,ps));
     }
 
     public Experiment(Activity c, List<LearningPurpose> ps) {

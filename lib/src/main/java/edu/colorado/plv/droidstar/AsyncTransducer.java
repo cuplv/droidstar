@@ -125,7 +125,8 @@ public class AsyncTransducer implements AsyncMealyTeacher {
         seen = new ArrayList();
 
         if (purpose.validQuery(remInputs)) {
-            new Thread(new ResetBlocker(null,false)).start();
+            Handler mainHandler = new Handler(mainContext.getMainLooper());
+            mainHandler.post(new ResetBlocker(null,false));
         } else {
             returnWithError();
         }
