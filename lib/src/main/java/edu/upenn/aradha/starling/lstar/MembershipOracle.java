@@ -140,8 +140,37 @@ public abstract class MembershipOracle {
 
             if (trace.contains(Query.Outputs.ERROR)) {
                 result = this.getErrorInstance();
+                String s = new String();
+                boolean started = false;
+                for (int i = 0; i < word.size(); i++) {
+                    if (started) {
+                        s = s + ",";
+                    }
+                    s = s + word.get(i).toString();
+                    started = true;
+                }
+                Log.d("DROIDSTAR:NG:QUERY:NO",s);
             } else {
                 result = new Trace(word, trace);
+                String s = new String();
+                boolean started = false;
+                for (int i = 0; i < word.size(); i++) {
+                    if (started) {
+                        s = s + ",";
+                    }
+                    s = s + word.get(i).toString();
+                    started = true;
+                }
+                s = s + ";";
+                started = false;
+                for (int i = 0; i < trace.size(); i++) {
+                    if (started) {
+                        s = s + ",";
+                    }
+                    s = s + trace.get(i).toString();
+                    started = true;
+                }
+                Log.d("DROIDSTAR:NG:QUERY:OK",s);
             }
 
             // Trace traceResult = new Trace(word, trace);
