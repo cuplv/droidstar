@@ -203,6 +203,7 @@ public class LStar {
             makeConsistent();
             try {
                 this.printAutomaton(false);
+                this.printAutomaton2("CHECK");
             } catch (Exception e) {
                 Log.e("STARLING:Q", "what? :(");
                 e.printStackTrace();
@@ -215,6 +216,7 @@ public class LStar {
                 Log.d("STARLING:Q", "Automaton is correct!");
                 try {
                     this.printAutomaton(true);
+                    this.printAutomaton2("RESULT");
                 } catch (Exception e) {
                     Log.e("STARLING:Q", "Error writing result diagram :(");
                     e.printStackTrace();
@@ -231,6 +233,7 @@ public class LStar {
             }
 
             System.out.println("Got cex input: " + Utils.stringJoin(" ", cex));
+            Log.d("DROIDSTAR:NG:CEX", Utils.stringJoin(",", cex));
             System.out.println("**************************************************");
             for (Map.Entry<String, Object> kv : eOracle.additionalInfo.entrySet()) {
                 System.out.println("Equivalence INFO: " + kv.getKey() + " " + kv.getValue());
@@ -289,6 +292,36 @@ public class LStar {
         System.out.println("}\n");
         if (correct) diagramFile.write("}\n");
         System.out.println("==========END AUTOMATON===============");
+    }
+    private void printAutomaton2(String kind) throws Exception {
+        String dbgr = new String();
+        // System.out.println("==========START AUTOMATON=============");
+        // System.out.println("digraph {\n");
+        // if (correct) diagramFile.write("digraph {\n");
+        dbgr = dbgr + "digraph {";
+        for (int from = 0; from < this.states.size(); from++) {
+            // System.out.println(from);
+            for (Map.Entry<Input, Signature> kv : this.states.get(from).getTransitions()) {
+                Input input = kv.getKey();
+                Signature signature = kv.getValue();
+                int to = findState(signature);
+                String label = input.toString();
+                if (input.equals(Query.Inputs.DELTA))
+                    label += "_" + this.states.get(from).getOutputOn(input, experiments);
+                if ((!this.states.get(to).isErrorState)
+                    && (!label.equals("delta_beta"))) {
+                    // System.out.println(from + " -> " + findState(signature) + "[label=" + label + "];");
+                    // if (correct) diagramFile.write("  " + from + " -> " + findState(signature) + "[label=" + label + "];\n");
+                    String label2 = new String(label).replaceAll("delta_","cb_");
+                    dbgr = dbgr + (from + " -> " + findState(signature) + "[label=" + label2 + "];");
+                }
+            }
+        }
+        // System.out.println("}\n");
+        // if (correct) diagramFile.write("}\n");
+        dbgr = dbgr + "}";
+        Log.d("DROIDSTAR:NG:" + kind, dbgr);
+        // System.out.println("==========END AUTOMATON===============");
     }
 
     public List<Input> checkEquivalence() throws Exception {

@@ -1,1 +1,1 @@
-adb logcat | grep 'DROIDSTAR:NG:QUERY'
+adb logcat | grep 'DROIDSTAR:NG'
