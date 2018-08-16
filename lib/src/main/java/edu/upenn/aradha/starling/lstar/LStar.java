@@ -306,14 +306,17 @@ public class LStar {
                 Signature signature = kv.getValue();
                 int to = findState(signature);
                 String label = input.toString();
-                if (input.equals(Query.Inputs.DELTA))
+                String color = "\"limegreen\"";
+                if (input.equals(Query.Inputs.DELTA)) {
                     label += "_" + this.states.get(from).getOutputOn(input, experiments);
+                    color = "\"lightskyblue\"";
+                }
                 if ((!this.states.get(to).isErrorState)
                     && (!label.equals("delta_beta"))) {
                     // System.out.println(from + " -> " + findState(signature) + "[label=" + label + "];");
                     // if (correct) diagramFile.write("  " + from + " -> " + findState(signature) + "[label=" + label + "];\n");
-                    String label2 = new String(label).replaceAll("delta_","cb_");
-                    dbgr = dbgr + (from + " -> " + findState(signature) + "[label=" + label2 + "];");
+                    String label2 = new String(label).replaceAll("delta_","");
+                    dbgr = dbgr + (from + " -> " + findState(signature) + "[color=" + color + ", label=" + label2 + "];");
                 }
             }
         }
