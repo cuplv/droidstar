@@ -8,16 +8,12 @@ import scala.collection.JavaConverters._
 
 import android.os.Environment
 
-class MainActivity extends AppCompatActivity {
+class VelocityTrackerActivity extends AppCompatActivity {
 
   // List learning purposes you wish to learn here.  They will be
   // performed in the order they are listed.
   lazy val experiments = Seq[LearningPurpose](
-    new lp.CountDownTimerLP(this),
-    new lp.FileObserverLP(this),
-    new lp.VelocityTrackerLP(this),
-    new lp.SpellCheckerSessionLP(this),
-    new lp.SpeechRecognizerLP(this)
+    new lp.VelocityTrackerLP(this)
       // etc.
   )
 
