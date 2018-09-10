@@ -14,14 +14,25 @@
 
 # Demo Tutorial
 
-Testing the tutorial page.
+Begin by selecting an experiment from the blue dropdown menu.
+
+![Select and experiment](./imgs/select.png)
+
+Then, hit the green **Learn** button at the bottom of the
+**LearningPurpose** panel.
 
 ## Following the learning process
 
-DroidStar learns by performing **queries**, which are sequences of
-callins interspersed with pauses to listen for callbacks.
+Once the experiment is finished compiling and the learning process
+begins, you will wonder how to read these things:
 
-These pauses are written in the following logs as <span
+![Example traces](./imgs/traces.png)
+
+DroidStar learns by performing **queries**, which are sequences of
+callins interspersed with pauses to listen for callbacks.  Each of
+these lines represents the result of a single query.
+
+These pauses are written in the traces as <span
 class="okin">(CB?)</span> blocks.  Each pause gets a blue response
 block after the ">>", which either contains a callback or a <span
 class="okout">(none)</span> if none were seen.
@@ -33,8 +44,10 @@ throw an error.  In this case they will appear green and followed by
 
 ## Understanding the results
 
+![Example results](./imgs/result.png)
+
 The result of a learning session is a **callback typestate**,
-presented below as a graph, which describes a class's stateful behavior.
+presented as a graph which describes a class's stateful behavior.
 
 A class object begins in state 0, and allows only those callins which
 have arrows leaving state 0 to be called.  Upon having an accepted
